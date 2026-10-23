@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Evaluate retrieval (and optionally answers) on eval/questions.jsonl.
 
   python eval/run_eval.py                 # compare bm25 vs vector vs hybrid retrieval
@@ -9,6 +7,8 @@ Results print as a table and are saved to eval/results/.
 Questions with an empty "relevant" list are skipped for retrieval metrics,
 so label them first with scripts/find_chunks.py.
 """
+
+from __future__ import annotations
 
 import argparse
 import json
@@ -101,7 +101,7 @@ def main() -> None:
         os.environ["VISARAG_RAW_DIR"] = str(ROOT / "data/public_raw")
         os.environ["VISARAG_DATA_DIR"] = str(ROOT / "data/public_cache")
     from visarag.assistant import VisaAssistant
-    from visarag.config import GEMINI_EMBED_MODEL, CHUNKS_FILE
+    from visarag.config import GEMINI_EMBED_MODEL
     from visarag.index_cache import index_path
     questions = load_questions(Path(args.questions))
     assistant = VisaAssistant()

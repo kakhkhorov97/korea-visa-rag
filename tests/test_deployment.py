@@ -145,3 +145,48 @@ def test_public_corpus_and_container_are_statute_only():
     assert 'COPY data/raw/' not in dockerfile
     startup = (ROOT / 'scripts/serve.py').read_text()
     assert "'--no-embed'" in startup
+
+
+def test_semantic_search_shares_daily_budget_with_answers(tmp_path, monkeypatch):
+    calls = Mock(return_value=sample_chunks())
+    assistant = SimpleNamespace(available_modes=['bm25', 'vector'], mode='bm25',
+                                retrieve=calls, use_llm=True)
+    monkeypatch.setattr(api, 'get_assistant', lambda: assistant)
+    limits = UsageLimits(tmp_path / 'limits.db', 10, 1, 1)
+    monkeypatch.setattr(api, 'get_limits', lambda: limits)
+    client = TestClient(api.app)
+    assert client.get('/api/search', params={'q': 'visa', 'mode': 'vector'}).status_code == 200
+    assert client.get('/api/search', params={'q': 'visa', 'mode': 'vector'}).status_code == 429
+    assert client.get('/api/search', params={'q': 'visa', 'mode': 'bm25'}).status_code == 200
+    assert calls.call_count == 2
+
+
+def test_forwarded_ip_cannot_bypass_client_limit(tmp_path, monkeypatch):
+    assistant = SimpleNamespace(available_modes=['bm25'], mode='bm25', retrieve=Mock(return_value=[]))
+    monkeypatch.setattr(api, 'get_assistant', lambda: assistant)
+    limits = UsageLimits(tmp_path / 'limits.db', 1, 10, 1)
+    monkeypatch.setattr(api, 'get_limits', lambda: limits)
+    client = TestClient(api.app)
+    assert client.get('/api/search?q=visa', headers={'X-Forwarded-For': '192.0.2.1'}).status_code == 200
+    assert client.get('/api/search?q=visa', headers={'X-Forwarded-For': '192.0.2.2'}).status_code == 429
+
+
+def test_annex_rows_stay_whole_and_match_recorded_hash():
+    import hashlib
+    from visarag.chunking import chunk_document
+    from visarag.config import ROOT
+    from visarag.documents import load_documents
+    for doc in load_documents(ROOT / 'data/public_raw'):
+        assert hashlib.sha256(doc.text.encode()).hexdigest() == doc.extra['text_sha256']
+        if doc.extra.get('excerpt'):
+            chunks = chunk_document(doc)
+            assert len(chunks) == 1 and chunks[0].text == doc.text
+
+
+def test_eval_rejects_labels_from_wrong_corpus():
+    import runpy
+    from visarag.config import ROOT
+    module = runpy.run_path(str(ROOT / 'eval/run_eval.py'))
+    engine = SimpleNamespace(by_id={'current': object()})
+    with pytest.raises(ValueError, match='missing chunks'):
+        module['eval_retrieval'](engine, [{'relevant': ['old']}], 5)

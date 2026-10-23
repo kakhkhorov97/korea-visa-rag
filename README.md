@@ -104,7 +104,7 @@ answers and embeddings. Without this key, it returns BM25 search results and sou
 The key stays on the backend; neither the browser nor Telegram users need it.
 Set `SEARCH_ONLY=true` in `.env` to disable Gemini calls even when a key is saved.
 Restart the server after changing `.env`.
-The website calls this mode **Guide search** and shows original passages by default.
+The website calls this mode **Source search** and shows original passages by default.
 The **Search options** section explains the available methods without requiring RAG terminology.
 
 Four official HiKorea guide extracts for D-2, D-4, D-10 and E-7 are included in

@@ -79,12 +79,12 @@ function renderAnswer(card, data) {
   const searchOnly = data.mode === "search-only";
   const answer = searchOnly
     ? (data.sources.length
-      ? "Here are matching passages from official guides. Open a source link to read the full guide."
+      ? "Here are matching passages from official sources. Open a source link to read the full source."
       : "No matching passages found. Try a visa code or different Korean keywords.")
     : data.answer;
   const count = data.sources.length;
   const sourceLabel = count === 1 ? "passage" : "passages";
-  const method = searchOnly ? "Guide search" : (modeNames[data.mode] || "Search");
+  const method = searchOnly ? "Source search" : (modeNames[data.mode] || "Search");
   card.innerHTML = `
     <div class="answer${searchOnly ? " note" : ""}">${formatAnswer(answer)}</div>
     ${renderSources(data.sources, data.cited || [])}
@@ -134,17 +134,17 @@ fetch("/api/health")
   .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
   .then(({ ok, d }) => {
     if (!ok) throw new Error(d.detail);
-    status.textContent = d.llm ? "AI answers on" : "Guide search";
+    status.textContent = d.llm ? "AI answers on" : "Source search";
     status.className = `pill ${d.llm ? "pill-ok" : "pill-muted"}`;
     $("#search-help").textContent = d.llm
       ? "Ask in English or Korean. Answers include links to the official passages used."
-      : "Keyword search is on. Use a visa code or Korean keywords to find original guide passages.";
+      : "Keyword search is on. Use a visa code or Korean keywords to find original source passages.";
     const meaningAvailable = d.modes.includes("vector");
     $("#mode-help").textContent = meaningAvailable
       ? "Choose how to find passages. This changes the search method, not the source documents."
       : "Meaning search is not enabled in this session, so meaning and combined search are unavailable.";
     if (!d.llm) {
-      $("#empty-title")?.replaceChildren("Search the official visa guides");
+      $("#empty-title")?.replaceChildren("Search the official visa sources");
       $("#empty-help")?.replaceChildren("Try a visa code or Korean keywords, such as D-10 체류기간. You will see original passages and source links, without an AI-written answer.");
       input.placeholder = "Try D-10 체류기간 or D-2 시간제 취업";
       $("#examples-title").textContent = "Try a search";
