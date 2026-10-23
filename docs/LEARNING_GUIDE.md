@@ -74,6 +74,8 @@ compare evaluation scores. This experiment is a great résumé line ("article-ba
 - `llm.embed` uses Gemini's `RETRIEVAL_DOCUMENT` task for stored passages;
   `llm.embed_query` uses `RETRIEVAL_QUERY` for questions. Both use `gemini-embedding-001`.
   Rebuild the index if you change embedding providers or models.
+- Indexing sends five passages per embedding request to reduce quota bursts. Google can
+  still limit the project; a 429 response means the request was rejected by a quota limit.
 
 **Exercise:** ask an English question in the app with mode = `bm25`, then `vector`. Notice BM25
 fails across languages and vector search doesn't.
@@ -87,6 +89,8 @@ fails across languages and vector search doesn't.
 - Read `SYSTEM_PROMPT`. Every rule exists to prevent a failure: no citations, guessing, wrong language.
 - `llm.chat` converts our message list into Gemini contents and a separate system instruction.
   It also maps Gemini token counts to the keys used by `Answer` and the evaluation script.
+- The default answer model is `gemini-3.5-flash-lite`. The cached SDK client limits each
+  request to 60 seconds with automatic retries disabled, so a stalled request returns control.
 - `cited_numbers` checks which sources the answer actually used; the UI marks them ✅.
 
 **Exercise:** delete rule 3 from the prompt and ask "What is the E-9 visa?" (not in your data).

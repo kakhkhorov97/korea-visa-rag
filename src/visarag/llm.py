@@ -17,7 +17,13 @@ def client():
 
     if not GEMINI_API_KEY:
         raise ValueError("Set GEMINI_API_KEY in .env to use Gemini.")
-    return genai.Client(api_key=GEMINI_API_KEY, vertexai=False)
+    return genai.Client(
+        api_key=GEMINI_API_KEY, vertexai=False,
+        # A stalled provider request must not leave a web or Telegram reply waiting forever.
+        http_options=types.HttpOptions(
+            timeout=60_000, retry_options=types.HttpRetryOptions(attempts=1),
+        ),
+    )
 
 
 def embed(texts: list[str], task_type: str = "RETRIEVAL_DOCUMENT") -> list[list[float]]:

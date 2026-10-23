@@ -51,7 +51,8 @@ class VectorRetriever:
             self.COLLECTION, metadata={"hnsw:space": "cosine"}
         )
 
-    def build(self, chunks: Sequence[Chunk], batch_size: int = 100) -> None:
+    def build(self, chunks: Sequence[Chunk], batch_size: int = 5) -> None:
+        """Use small batches to reduce bursts against embedding API quotas."""
         for start in range(0, len(chunks), batch_size):
             batch = chunks[start:start + batch_size]
             texts = [f"{c.title} {c.section}\n{c.text}" for c in batch]

@@ -234,6 +234,23 @@ def test_vector_retriever_with_fake_embeddings(chunks):
     assert queries == ["시간제"]
 
 
+def test_vector_build_respects_small_embedding_batches(chunks, tmp_path):
+    from dataclasses import replace
+
+    from visarag.retrieval import VectorRetriever
+
+    documents = [replace(chunks[i % len(chunks)], chunk_id=f"batch-test-{i}") for i in range(12)]
+
+    def limited_embed(texts):
+        if len(texts) > 5:
+            pytest.fail("Embedding request exceeds the project's small-batch limit")
+        return [[1.0, 0.0] for _ in texts]
+
+    retriever = VectorRetriever(limited_embed, persist_dir=str(tmp_path))
+    retriever.build(documents)
+    assert set(retriever.collection.get(include=[])["ids"]) == {c.chunk_id for c in documents}
+
+
 @pytest.fixture
 def gemini_models(monkeypatch):
     """Use real SDK types, but replace the network client so tests stay free."""
@@ -323,6 +340,26 @@ def test_gemini_requires_key(monkeypatch):
     monkeypatch.setattr(llm, "GEMINI_API_KEY", "")
     with pytest.raises(ValueError, match="GEMINI_API_KEY"):
         llm.client()
+
+
+def test_gemini_client_bounds_requests_and_is_cached(monkeypatch):
+    from unittest.mock import Mock
+
+    from google import genai
+    from visarag import llm
+
+    factory = Mock()
+    monkeypatch.setattr(genai, "Client", factory)
+    monkeypatch.setattr(llm, "GEMINI_API_KEY", "test-key-not-a-real-credential")
+    llm.client.cache_clear()
+    try:
+        assert llm.client() is llm.client()
+        factory.assert_called_once()
+        options = factory.call_args.kwargs["http_options"]
+        assert options.timeout == 60_000
+        assert options.retry_options.attempts == 1
+    finally:
+        llm.client.cache_clear()
 
 
 def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypatch, tmp_path):

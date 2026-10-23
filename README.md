@@ -109,8 +109,8 @@ from these files without a law API account. For a fully local run, set
 Source provenance, extraction details and the guide's separate license are in
 [data/SOURCES.md](data/SOURCES.md). Keyword search works best with Korean terms and visa codes.
 
-`GEMINI_CHAT_MODEL` defaults to `gemini-flash-latest`, a changing model alias. Set a specific
-model ID when comparing evaluation runs. `GEMINI_EMBED_MODEL` defaults to the text-only
+`GEMINI_CHAT_MODEL` defaults to the pinned `gemini-3.5-flash-lite` model. Requests have a
+60-second timeout and no automatic retries. `GEMINI_EMBED_MODEL` defaults to the text-only
 `gemini-embedding-001`, which returns one vector per input text. Other embedding models may
 need different input handling. Rebuild with `python scripts/build_index.py` after changing
 embedding providers or models; old vectors cannot be reused with a different embedding space.
