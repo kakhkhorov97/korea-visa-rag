@@ -35,7 +35,7 @@ WELCOME = (
     "in English or Korean. Every answer cites official sources.\n\n"
     "D-2, D-4, D-10, E-7 비자에 대해 한국어나 영어로 질문해 주세요. "
     "모든 답변에 공식 출처가 표시됩니다.\n\n"
-    "Try: <i>Can I work part-time on a D-2 student visa?</i>\n\n"
+    "Try: <i>Can I work part-time on a D-2 student-visa?</i>\n\n"
     "⚠️ General information, not legal advice. Confirm with ☎ 1345."
 )
 
@@ -53,8 +53,10 @@ HELP = (
 def format_answer_html(answer: Answer) -> str:
     """Render an Answer as Telegram HTML: escaped text, bold citations, linked sources."""
     body = html.escape(answer.text.strip())
-    body = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", body)        # **bold** from the LLM
-    body = re.sub(r"\[(\d+)\]", r"<b>[\1]</b>", body)           # citation markers
+    body = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>",
+                  body)        # **bold** from the LLM
+    body = re.sub(r"\[(\d+)\]", r"<b>[\1]</b>",
+                  body)           # citation markers
 
     lines = [body, "", "<b>Sources</b>"]
     for i, chunk in enumerate(answer.sources, start=1):
@@ -136,16 +138,20 @@ def build_app(assistant: VisaAssistant):
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("mode", mode_cmd))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_question))
+    app.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND, on_question))
     return app
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO,
+                        format="%(asctime)s %(levelname)s %(message)s")
     if not TELEGRAM_BOT_TOKEN:
-        raise SystemExit("Set TELEGRAM_BOT_TOKEN in .env (get one from @BotFather).")
+        raise SystemExit(
+            "Set TELEGRAM_BOT_TOKEN in .env (get one from @BotFather).")
     assistant = VisaAssistant()
-    log.info("Loaded %d chunks; LLM answers: %s", len(assistant.chunks), assistant.use_llm)
+    log.info("Loaded %d chunks; LLM answers: %s",
+             len(assistant.chunks), assistant.use_llm)
     build_app(assistant).run_polling()
 
 
