@@ -51,10 +51,22 @@ class VectorRetriever:
             self.COLLECTION, metadata={"hnsw:space": "cosine"}
         )
 
+    def matches(self, chunks: Sequence[Chunk]) -> bool:
+        """Check IDs and embedded text before advertising a reusable index."""
+        stored = self.collection.get(include=["documents"])
+        return dict(zip(stored["ids"], stored["documents"])) == {
+            c.chunk_id: f"{c.title} {c.section}\n{c.text}" for c in chunks
+        }
+
     def build(self, chunks: Sequence[Chunk], batch_size: int = 5) -> None:
         """Use small batches to reduce bursts against embedding API quotas."""
-        for start in range(0, len(chunks), batch_size):
-            batch = chunks[start:start + batch_size]
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        stored = self.collection.get(include=["documents"])
+        existing = dict(zip(stored["ids"], stored["documents"]))
+        pending = [c for c in chunks if existing.get(c.chunk_id) != f"{c.title} {c.section}\n{c.text}"]
+        for start in range(0, len(pending), batch_size):
+            batch = pending[start:start + batch_size]
             texts = [f"{c.title} {c.section}\n{c.text}" for c in batch]
             self.collection.upsert(
                 ids=[c.chunk_id for c in batch],

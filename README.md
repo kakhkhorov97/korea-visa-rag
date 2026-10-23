@@ -7,7 +7,7 @@ using only official government sources.
 > 한국어 설명은 [아래](#한국어)에 있습니다.
 
 **Status:** 🚧 In development. Core pipeline, web app and tests are implemented; data collection,
-evaluation results and deployment are in progress.
+a first statute-corpus retrieval evaluation is complete; public deployment is pending.
 
 ![UI design mockup](docs/images/mockup.png)
 *UI design mockup. A screenshot of the running app will replace it.*
@@ -67,15 +67,20 @@ See [the source format](data/raw/README.md) when adding documents.
 
 ## Results
 
-_Planned. Will be filled in from `python eval/run_eval.py` on a labeled question set._
+Measured on 2026-10-24 with `python eval/run_eval.py`: 22 statute chunks,
+11 labeled in-scope questions, and one excluded out-of-scope question. Five
+in-scope questions have partial source coverage and remain in the scores.
+These retrieval metrics do not measure legal answer accuracy. This small set
+has not been independently annotated. See [labels](eval/LABELING.md) and the
+[saved report](eval/public_baseline.json).
 
 Use `python eval/run_eval.py --k 10` to score the top 10 results. `--k` must be a positive integer.
 
 | Retrieval | hit@5 | recall@5 | MRR |
 |---|---|---|---|
-| BM25 | – | – | – |
-| Vector | – | – | – |
-| Hybrid (RRF) | – | – | – |
+| BM25 | 0.818 | 0.636 | 0.818 |
+| Vector | 1.000 | 0.939 | 0.848 |
+| Hybrid (RRF) | 1.000 | 0.909 | 0.939 |
 
 ## Quick start
 
@@ -90,7 +95,7 @@ uvicorn visarag.api:app --reload --app-dir src
 # open http://localhost:8000      API docs: http://localhost:8000/docs
 
 pytest -q                        # tests (no API key needed)
-python eval/run_eval.py          # compare retrieval methods
+python eval/run_eval.py          # public corpus; build its separate cache first (see eval/LABELING.md)
 ```
 
 Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) and set
@@ -115,7 +120,26 @@ Source provenance, extraction details and the guide's separate license are in
 need different input handling. Rebuild with `python scripts/build_index.py` after changing
 embedding providers or models; old vectors cannot be reused with a different embedding space.
 
-Docker: `docker build -t korea-visa-rag . && docker run -p 8000:8000 --env-file .env korea-visa-rag`
+### Public demo package
+
+Docker uses only the 22 official statute chunks in `data/public_raw/`. The
+HiKorea manual and local extracts are excluded, along with `.env` and local
+indexes. See [source scope and reuse basis](data/public_raw/README.md).
+
+```bash
+docker build -t korea-visa-rag .
+docker run --rm -p 8000:8000 -e SEARCH_ONLY=true korea-visa-rag
+```
+
+Startup never embeds documents. An explicit `python scripts/build_index.py`
+preparation job builds or resumes a model/corpus-specific cache. Keep generated
+data on a persistent volume. With a key but no complete vector cache, Gemini
+answers use keyword retrieval until the preparation job finishes and the app
+restarts. See [deployment instructions](docs/DEPLOYMENT.md) for persistent
+storage, secret settings, and API usage limits.
+
+The image and new container CI workflow have not been run here because Docker
+is unavailable. A public hosting account and deployment URL are still needed.
 
 ### Telegram bot
 
@@ -139,6 +163,8 @@ curl -X POST localhost:8000/api/ask -H "Content-Type: application/json" \
 Returns the answer, the mode used, cited source numbers, and each source's citation, URL and text.
 Questions are trimmed before validation and must contain 2 to 500 characters after trimming.
 Invalid questions return HTTP 422 before the assistant runs.
+API requests are limited per client and paid usage has a persistent daily request cap.
+Gemini quota and connection failures return safe, readable errors.
 `GET /api/search?q=D-10` returns source passages without generating an answer.
 Its `q` parameter follows the same trimming and length rules as questions.
 
@@ -167,7 +193,8 @@ tests/           unit + API tests
 - [x] Cited answers, search-only mode, web app, REST API, tests, CI
 - [x] Telegram bot interface
 - [x] Collect HiKorea guides for D-2, D-4, D-10, E-7
-- [ ] Label 30+ evaluation questions and publish results
+- [x] Label the existing 12 questions and publish the first statute-corpus results
+- [ ] Expand to 30+ questions and independently review answer quality
 - [ ] Deploy a public demo
 - [ ] Cross-encoder reranker, Upstage Solar comparison
 

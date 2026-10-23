@@ -4,11 +4,33 @@ All provider calls stay here so the assistant, web app and Telegram bot
 can share the same engine without knowing the SDK's request format.
 """
 
-from functools import lru_cache
+from functools import lru_cache, wraps
+
+import httpx
+from google.genai import errors
+
+from .errors import ProviderError
 
 from google.genai import types
 
 from .config import GEMINI_API_KEY, GEMINI_CHAT_MODEL, GEMINI_EMBED_MODEL
+
+
+def provider_call(fn):
+    """Never expose upstream error text, request URLs or credentials to callers."""
+    @wraps(fn)
+    def wrapped(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except errors.APIError as exc:
+            if exc.code == 429:
+                raise ProviderError("Gemini's request limit was reached. Please try again later.", 429) from exc
+            raise ProviderError("The AI service is unavailable. Please try again later.") from exc
+        except httpx.TimeoutException as exc:
+            raise ProviderError("The AI service timed out. Please try again.", 504) from exc
+        except httpx.TransportError as exc:
+            raise ProviderError("The AI service could not be reached. Please try again later.") from exc
+    return wrapped
 
 
 @lru_cache(maxsize=1)
@@ -26,6 +48,7 @@ def client():
     )
 
 
+@provider_call
 def embed(texts: list[str], task_type: str = "RETRIEVAL_DOCUMENT") -> list[list[float]]:
     """Return one vector per text using the text-only gemini-embedding-001 model."""
     if not texts:
@@ -37,7 +60,7 @@ def embed(texts: list[str], task_type: str = "RETRIEVAL_DOCUMENT") -> list[list[
     )
     embeddings = resp.embeddings or []
     if len(embeddings) != len(texts) or any(not e.values for e in embeddings):
-        raise ValueError("Gemini did not return one embedding per input text.")
+        raise ProviderError("Gemini did not return one embedding per input text. Please try again.")
     return [e.values for e in embeddings]
 
 
@@ -46,6 +69,7 @@ def embed_query(texts: list[str]) -> list[list[float]]:
     return embed(texts, task_type="RETRIEVAL_QUERY")
 
 
+@provider_call
 def chat(messages: list[dict], temperature: float = 0.0) -> tuple[str, dict]:
     system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
     contents = [
@@ -58,10 +82,10 @@ def chat(messages: list[dict], temperature: float = 0.0) -> tuple[str, dict]:
     resp = client().models.generate_content(
         model=GEMINI_CHAT_MODEL,
         contents=contents,
-        config=types.GenerateContentConfig(system_instruction=system, temperature=temperature),
+        config=types.GenerateContentConfig(system_instruction=system, temperature=temperature, max_output_tokens=1536),
     )
     if not resp.text:
-        raise ValueError("Gemini returned no answer text.")
+        raise ProviderError("Gemini returned no answer text. Please try again.")
     usage = resp.usage_metadata
     # Keep the shared Answer/evaluation token keys independent of the SDK.
     return resp.text, {

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Evaluate retrieval (and optionally answers) on eval/questions.jsonl.
 
   python eval/run_eval.py                 # compare bm25 vs vector vs hybrid retrieval
@@ -10,6 +12,8 @@ so label them first with scripts/find_chunks.py.
 
 import argparse
 import json
+import os
+from collections import Counter
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +21,9 @@ from statistics import mean
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from visarag.assistant import VisaAssistant  # noqa: E402
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from visarag.assistant import VisaAssistant
 from visarag.metrics import hit_at_k, recall_at_k, reciprocal_rank, summarize  # noqa: E402
 
 MODES = ["bm25", "vector", "hybrid"]   # only the ones available are evaluated
@@ -29,6 +35,10 @@ def load_questions(path: Path) -> list[dict]:
 
 
 def eval_retrieval(assistant: VisaAssistant, questions: list[dict], k: int) -> dict:
+    valid_ids = set(assistant.by_id)
+    unknown = {cid for q in questions for cid in q.get("relevant", [])} - valid_ids
+    if unknown:
+        raise ValueError(f"Labels reference missing chunks: {sorted(unknown)}. Select the matching corpus.")
     labeled = [q for q in questions if q.get("relevant")]
     if not labeled:
         print("No labeled questions yet. Add chunk IDs to 'relevant' (see scripts/find_chunks.py).")
@@ -54,7 +64,7 @@ def eval_retrieval(assistant: VisaAssistant, questions: list[dict], k: int) -> d
 
 
 def eval_answers(assistant: VisaAssistant, questions: list[dict]) -> dict:
-    print("\nGenerating answers (hybrid)…")
+    print("\nGenerating answers using the available retrieval mode…")
     rows = []
     for q in questions:
         a = assistant.ask(q["question"], mode="hybrid")
@@ -79,6 +89,7 @@ def eval_answers(assistant: VisaAssistant, questions: list[dict]) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--corpus", choices=["public", "local"], default="public")
     parser.add_argument("--questions", default=str(ROOT / "eval" / "questions.jsonl"))
     parser.add_argument("--k", type=int, default=5, help="Number of top results to score (at least 1)")
     parser.add_argument("--answers", action="store_true")
@@ -86,9 +97,20 @@ def main() -> None:
     if args.k < 1:
         parser.error("--k must be at least 1")
 
+    if args.corpus == "public":
+        os.environ["VISARAG_RAW_DIR"] = str(ROOT / "data/public_raw")
+        os.environ["VISARAG_DATA_DIR"] = str(ROOT / "data/public_cache")
+    from visarag.assistant import VisaAssistant
+    from visarag.config import GEMINI_EMBED_MODEL, CHUNKS_FILE
+    from visarag.index_cache import index_path
     questions = load_questions(Path(args.questions))
     assistant = VisaAssistant()
-    result = {"retrieval": eval_retrieval(assistant, questions, args.k)}
+    coverage = dict(Counter(q.get("coverage", "unreviewed") for q in questions))
+    print(f"Coverage: {coverage}. Partial questions remain in retrieval scores.")
+    result = {"corpus": args.corpus, "chunks": len(assistant.chunks),
+              "embedding_model": GEMINI_EMBED_MODEL, "coverage": coverage,
+              "corpus_fingerprint": index_path(assistant.chunks, GEMINI_EMBED_MODEL, Path('.')).name,
+              "retrieval": eval_retrieval(assistant, questions, args.k)}
     if args.answers:
         if not assistant.use_llm:
             sys.exit("--answers needs GEMINI_API_KEY in .env")

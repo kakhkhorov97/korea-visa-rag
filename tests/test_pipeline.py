@@ -180,6 +180,8 @@ def test_search_trims_query(chunks, monkeypatch):
     from visarag import api
 
     class SearchAssistant:
+        available_modes = ["bm25"]
+        mode = "bm25"
         def retrieve(self, query, mode, k):
             assert query == "D-10 구직"
             assert mode == "bm25" and k == 5
@@ -294,7 +296,8 @@ def test_gemini_rejects_missing_embeddings(gemini_models):
     from visarag import llm
 
     gemini_models.embed_content.return_value = types.EmbedContentResponse(embeddings=[])
-    with pytest.raises(ValueError, match="one embedding per input"):
+    from visarag.errors import ProviderError
+    with pytest.raises(ProviderError, match="one embedding per input"):
         llm.embed(["article"])
 
 
@@ -329,7 +332,8 @@ def test_gemini_rejects_empty_answer(gemini_models):
     from visarag import llm
 
     gemini_models.generate_content.return_value = types.GenerateContentResponse()
-    with pytest.raises(ValueError, match="no answer text"):
+    from visarag.errors import ProviderError
+    with pytest.raises(ProviderError, match="no answer text"):
         llm.chat([{"role": "user", "content": "question"}])
 
 
@@ -381,7 +385,9 @@ def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypa
     )
     monkeypatch.setattr(assistant, "INDEX_DIR", tmp_path)
     monkeypatch.setattr(assistant, "HAS_GEMINI", True)
-    VectorRetriever(llm.embed, persist_dir=str(tmp_path)).build(chunks)
+    from visarag.index_cache import index_path
+    path = index_path(chunks, assistant.GEMINI_EMBED_MODEL, tmp_path)
+    VectorRetriever(llm.embed, persist_dir=str(path)).build(chunks)
     engine = assistant.VisaAssistant(chunks=chunks)
     answer = engine.ask("시간제 취업 허가")
     assert engine.available_modes == ["hybrid", "bm25", "vector"]

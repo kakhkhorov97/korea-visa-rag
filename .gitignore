@@ -7,3 +7,5 @@ data/index/
 data/originals/
 eval/results/
 .pytest_cache/
+data/usage.sqlite3*
+data/public_cache/

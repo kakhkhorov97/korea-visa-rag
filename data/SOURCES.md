@@ -46,3 +46,11 @@ reference for the source material.
 
 The manual says updates can lag behind policy changes. The retrieval date records
 when this copy was collected; it is not a guarantee that the copy remains current.
+
+## Public deployment corpus
+
+Sean selected statute text for the public demo on 2026-10-24. The container uses
+only `data/public_raw/`. The HiKorea extracts and original manual stay outside the
+image. Source selection, extraction checks, limitations, and the statutory reuse
+basis are recorded in [public_raw/README.md](public_raw/README.md). Container
+exclusion does not change any files already tracked or published through Git.

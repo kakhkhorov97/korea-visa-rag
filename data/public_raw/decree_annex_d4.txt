@@ -1,0 +1,14 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-24
+excerpt: complete D4 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: f9de398fd8c8b93a3f2987458527a7be1b388d7e2590b3e0bbc30ae3a20a7c93
+---
+법무부장관이 정하는 요건을 갖춘 교육기관이나 기업체, 단
+  7. 일반연수         체 등에서 교육 또는 연수를 받거나 연구활동에 종사하려는
+     (D-4)        사람[연수기관으로부터 체재비를 초과하는 보수(報酬)를 받거
+                  나 유학(D-2)ㆍ기술연수(D-3) 체류자격에 해당하는 사람은
+                  제외한다]

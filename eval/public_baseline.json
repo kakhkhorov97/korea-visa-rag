@@ -1,0 +1,40 @@
+{
+  "corpus": "public",
+  "chunks": 22,
+  "embedding_model": "gemini-embedding-001",
+  "coverage": {
+    "partial": 5,
+    "covered": 6,
+    "out_of_scope": 1
+  },
+  "corpus_fingerprint": "10d40f00ec3896607e3895d05e6d21aec6778d70ac2f8d02f212a45ab6ea8243",
+  "retrieval": {
+    "bm25": {
+      "hit@5": 0.818,
+      "recall@5": 0.636,
+      "MRR": 0.818,
+      "n": 11
+    },
+    "vector": {
+      "hit@5": 1.0,
+      "recall@5": 0.939,
+      "MRR": 0.848,
+      "n": 11
+    },
+    "hybrid": {
+      "hit@5": 1.0,
+      "recall@5": 0.909,
+      "MRR": 0.939,
+      "n": 11
+    }
+  },
+  "measured_at": "2026-10-24 Asia/Seoul",
+  "command": "SEARCH_ONLY=false python eval/run_eval.py",
+  "question_file": "eval/questions.jsonl",
+  "limitations": [
+    "Five questions have partial source coverage and remain in retrieval scores.",
+    "One out-of-scope question is excluded from retrieval metrics.",
+    "MRR uses the top 20 candidates.",
+    "No answer-accuracy measurement or independent annotation."
+  ]
+}

@@ -1,0 +1,16 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-24
+excerpt: complete D10 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 9b8ecc95b12825c0db1b1d7f672da61c046a02bc804dd2e06a8a9f17fa29303a
+---
+가. 교수(E-1)부터 특정활동(E-7)까지의 체류자격[예술흥행
+              (E-6) 체류자격 중 법무부장관이 정하는 공연업소의 종사
+ 13. 구직       자는 제외한다]에 해당하는 분야에 취업하기 위하여 연수
+  (D-10)      나 구직활동 등을 하려는 사람으로서 법무부장관이 인정
+              하는 사람
+            나. 기업투자(D-8) 다목에 해당하는 법인의 창업 준비 등을
+              하려는 사람으로서 법무부장관이 인정하는 사람

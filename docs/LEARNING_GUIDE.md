@@ -173,3 +173,36 @@ This project was built with AI assistance, which is normal in 2026 engineering. 
 check is whether *you* understand it. Rule of thumb: if you can't explain a line, don't claim it.
 Do the exercises, run the experiments yourself, and the results and decisions become genuinely yours.
 If asked, say you used AI tools and then explain what you changed, measured and learned.
+
+## Preparing a public demo
+
+Local learning data and public deployment data now have separate paths.
+`data/raw/` retains the HiKorea extracts. Docker copies only statutory text from
+`data/public_raw/`. This prevents a guide's reuse restrictions from being
+silently carried into the public image. See `data/public_raw/README.md` for the
+source selection and provenance.
+
+`VISARAG_RAW_DIR` selects the sources. `VISARAG_DATA_DIR` selects where generated
+chunks, Chroma indexes and the API usage ledger live. On a host this should be a
+persistent writable volume, so restarting the server retains the data.
+
+Previously, startup deleted the index and embedded every chunk again. Now
+`index_cache.py` hashes the model name and exact embedded text into a directory
+name. `VectorRetriever.build()` compares stored IDs/text and embeds only missing
+or changed chunks. An interrupted run can resume; a completed rerun costs no
+embedding requests. `VisaAssistant` advertises vector/hybrid modes only after it
+checks that the matching collection contains every current chunk. Startup runs
+`build_index.py --no-embed`; enabling Gemini without a complete vector cache
+still allows AI answers over keyword retrieval.
+
+`limits.py` reserves API requests in SQLite before calling Gemini. The ledger
+survives restarts. A semaphore bounds simultaneous paid operations. The app
+hashes the actual connecting IP and ignores forwarded headers. Behind a proxy,
+several visitors can share a limit. See `docs/DEPLOYMENT.md` for deployment
+constraints. `llm.py` converts SDK errors to `ProviderError`, so the API can send
+an actionable message without returning provider URLs or credentials.
+
+The evaluation defaults to the public corpus. Every label has a source-based
+note, and partial coverage stays in retrieval scoring. Retrieving a relevant
+permission article does not prove the corpus contains all student-work rules.
+A retrieval hit and a legally complete answer are different measurements.

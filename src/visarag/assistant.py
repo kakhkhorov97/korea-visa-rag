@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, field
 
 from .chunking import Chunk
-from .config import CHUNKS_FILE, HAS_GEMINI, INDEX_DIR, TOP_K
+from .config import CHUNKS_FILE, HAS_GEMINI, INDEX_DIR, TOP_K, GEMINI_EMBED_MODEL
 from .retrieval import BM25Retriever, HybridRetriever
 
 SYSTEM_PROMPT = """You are a careful assistant that answers questions about Korean visa \
@@ -91,10 +91,15 @@ class VisaAssistant:
             from . import llm
             from .retrieval import VectorRetriever
 
-            vector = VectorRetriever(llm.embed, persist_dir=str(INDEX_DIR),
-                                     query_embed_fn=llm.embed_query)
-            self.retrievers["vector"] = vector
-            self.retrievers["hybrid"] = HybridRetriever(bm25, vector)
+            from .index_cache import index_path
+
+            path = index_path(self.chunks, GEMINI_EMBED_MODEL, INDEX_DIR)
+            if path.exists():
+                vector = VectorRetriever(llm.embed, persist_dir=str(path),
+                                         query_embed_fn=llm.embed_query)
+                if vector.matches(self.chunks):
+                    self.retrievers["vector"] = vector
+                    self.retrievers["hybrid"] = HybridRetriever(bm25, vector)
         self.mode = mode if mode in self.retrievers else "bm25"
 
     @property

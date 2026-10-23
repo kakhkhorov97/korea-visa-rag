@@ -1,13 +1,15 @@
 FROM python:3.11-slim
-
 WORKDIR /app
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/app/src \
+    VISARAG_DATA_DIR=/var/lib/visarag VISARAG_RAW_DIR=/app/data/public_raw
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && useradd --create-home app && mkdir -p /var/lib/visarag \
+    && chown app:app /var/lib/visarag
+COPY src/ src/
+COPY web/ web/
+COPY scripts/build_index.py scripts/serve.py scripts/
+COPY data/public_raw/ data/public_raw/
+USER app
 EXPOSE 8000
-
-# Build the index at startup (needs data in data/raw), then serve the web app + API.
-#   docker build -t korea-visa-rag .
-#   docker run -p 8000:8000 --env-file .env korea-visa-rag
-CMD ["sh", "-c", "python scripts/build_index.py && uvicorn visarag.api:app --app-dir src --host 0.0.0.0 --port 8000"]
+CMD ["python", "scripts/serve.py"]

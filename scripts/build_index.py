@@ -7,14 +7,13 @@ Run after adding or changing documents:
 
 import argparse
 import json
-import shutil
 import sys
 from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from visarag.chunking import chunk_document  # noqa: E402
-from visarag.config import CHUNKS_FILE, INDEX_DIR, RAW_DIR  # noqa: E402
+from visarag.config import CHUNKS_FILE, INDEX_DIR, RAW_DIR, GEMINI_EMBED_MODEL  # noqa: E402
 from visarag.documents import load_documents  # noqa: E402
 
 
@@ -50,9 +49,11 @@ def main() -> None:
     from visarag import llm
     from visarag.retrieval import VectorRetriever
 
-    shutil.rmtree(INDEX_DIR, ignore_errors=True)       # rebuild from scratch
-    VectorRetriever(llm.embed, persist_dir=str(INDEX_DIR)).build(chunks)
-    print(f"Vector index saved to {INDEX_DIR}")
+    from visarag.index_cache import index_path
+
+    path = index_path(chunks, GEMINI_EMBED_MODEL, INDEX_DIR)
+    VectorRetriever(llm.embed, persist_dir=str(path)).build(chunks)
+    print(f"Vector index saved to {path}. Unchanged embeddings were reused.")
 
 
 if __name__ == "__main__":

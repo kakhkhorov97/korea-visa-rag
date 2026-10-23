@@ -1,0 +1,16 @@
+**
+!requirements.txt
+!Dockerfile
+!src/
+!src/visarag/
+!src/visarag/*.py
+!web/
+!web/*.html
+!web/*.css
+!web/*.js
+!scripts/
+!scripts/build_index.py
+!scripts/serve.py
+!data/
+!data/public_raw/
+!data/public_raw/*.txt

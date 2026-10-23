@@ -51,6 +51,9 @@ def _normalise_label(label: str) -> str:
 def chunk_law(doc: Document) -> list[Chunk]:
     matches = list(ARTICLE_RE.finditer(doc.text))
     if not matches:
+        # Reviewed annex rows are complete units; numbered table cells are not headings.
+        if doc.extra.get("excerpt"):
+            return [_make(doc, 0, "", doc.text)]
         return chunk_guide(doc)
 
     chunks: list[Chunk] = []
