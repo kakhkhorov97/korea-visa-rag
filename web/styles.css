@@ -78,8 +78,26 @@ h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
   border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 24px;
 }
 .group { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.settings-title { font-size: 16px; line-height: 1.4; margin: 0; }
+.helper { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0; }
+.search-options { margin-top: 6px; }
+.search-options summary {
+  padding: 10px 0; min-height: 44px; color: var(--ink-2); font-size: 14px;
+  cursor: pointer;
+}
+.search-options[open] summary { margin-bottom: 6px; }
+.search-options .helper { margin-top: 12px; }
+.search-options fieldset { min-width: 0; }
+.mode span { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mode strong { font-size: 13px; font-weight: 600; }
+.mode small { font-size: 12px; font-weight: 400; line-height: 1.5; color: var(--muted); }
+.mode input { flex-shrink: 0; }
+.search-options summary:focus-visible, .example:focus-visible, .composer button:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+.mode:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
 .label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+  font-size: 13px; font-weight: 600;
   color: var(--muted); padding: 0; margin-bottom: 2px;
 }
 .mode {
@@ -89,7 +107,7 @@ h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
 .mode:has(input:checked) {
   background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); font-weight: 600;
 }
-.mode:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+.mode:has(input:disabled) { color: var(--muted); border-style: dashed; cursor: not-allowed; }
 .mode input, .toggle input { accent-color: var(--accent); }
 .example {
   text-align: left; font: inherit; font-size: 13px; color: var(--ink); background: var(--surface);

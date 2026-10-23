@@ -4,5 +4,6 @@ __pycache__/
 .venv/
 data/processed/
 data/index/
+data/originals/
 eval/results/
 .pytest_cache/

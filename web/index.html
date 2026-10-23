@@ -25,28 +25,36 @@
 
   <div class="layout">
     <aside class="sidebar" aria-label="Settings">
-      <fieldset class="group">
-        <legend class="label">Retrieval mode</legend>
-        <label class="mode"><input type="radio" name="mode" value="hybrid" checked> Hybrid (BM25 + vector)</label>
-        <label class="mode"><input type="radio" name="mode" value="bm25"> BM25 keyword</label>
-        <label class="mode"><input type="radio" name="mode" value="vector"> Vector only</label>
-      </fieldset>
+      <section class="group" aria-labelledby="search-title">
+        <h2 class="settings-title" id="search-title">Search official guides</h2>
+        <p class="helper" id="search-help">Find passages about your visa and follow the links to their official sources.</p>
+        <details class="search-options">
+          <summary>Search options</summary>
+          <fieldset class="group" aria-describedby="mode-help">
+            <legend class="sr-only">Search method</legend>
+            <label class="mode"><input type="radio" name="mode" value="bm25"><span><strong>Keyword search</strong><small>Matches words and visa codes in the guides.</small></span></label>
+            <label class="mode"><input type="radio" name="mode" value="vector"><span><strong>Meaning search</strong><small>Finds related passages, even with different wording.</small></span></label>
+            <label class="mode"><input type="radio" name="mode" value="hybrid" checked><span><strong>Combined search</strong><small>Uses both keywords and meaning.</small></span></label>
+          </fieldset>
+          <p class="helper" id="mode-help" role="status">Checking available search methods…</p>
+        </details>
+      </section>
 
       <div class="group">
-        <span class="label">Try asking</span>
-        <button type="button" class="example">Can I work part-time on a D-2 student visa?</button>
-        <button type="button" class="example">D-10 구직비자는 얼마나 체류할 수 있나요?</button>
-        <button type="button" class="example">What do I need to change from D-10 to E-7?</button>
+        <span class="label" id="examples-title">Try asking</span>
+        <button type="button" class="example" data-local-query="D-2 시간제 취업" data-local-example="D-2 시간제 취업 · Part-time work">Can I work part-time on a D-2 student visa?</button>
+        <button type="button" class="example" data-local-query="D-10 체류기간" data-local-example="D-10 체류기간 · Length of stay">D-10 구직비자는 얼마나 체류할 수 있나요?</button>
+        <button type="button" class="example" data-local-query="D-10 E-7 체류자격 변경" data-local-example="D-10에서 E-7 변경 · Changing visa">What do I need to change from D-10 to E-7?</button>
       </div>
 
-      <label class="toggle">Show passage text <input type="checkbox" id="show-text"></label>
+      <label class="toggle">Show original text <input type="checkbox" id="show-text"></label>
     </aside>
 
     <main class="chat">
       <div id="messages" class="messages" aria-live="polite">
         <div class="empty" id="empty">
-          <h2>Ask a visa question in English or Korean</h2>
-          <p>Answers come only from official Korean immigration sources, with a citation for every claim.</p>
+          <h2 id="empty-title">Find information about your visa</h2>
+          <p id="empty-help">Ask about D-2, D-4, D-10 or E-7. Results link to official government guides.</p>
         </div>
       </div>
 

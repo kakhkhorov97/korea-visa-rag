@@ -25,7 +25,7 @@ retrieves the exact article, answers from it, and links to the source for every 
 - **Citations on every claim** with links to the official source, and cited sources highlighted
 - **Hybrid retrieval:** Korean keyword search (BM25 + Kiwi) and semantic vector search, fused with RRF
 - **Free search-only mode:** runs with no API key, returning the most relevant official passages
-- **Switchable retrieval mode** in the UI to compare BM25, vector and hybrid side by side
+- **Optional search controls:** keyword, meaning and combined search, with explanations
 - **Telegram bot** sharing the same engine: cited answers, linked sources, `/mode` switching
 - **REST API** with auto-generated docs (`/docs`)
 - **Evaluation pipeline** (hit@k, recall@k, MRR) and automated tests via GitHub Actions
@@ -84,7 +84,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env            # optional: add GEMINI_API_KEY; LAW_API_OC for law download
 
-python scripts/fetch_laws.py    # download immigration laws from open.law.go.kr (free key)
+python scripts/fetch_laws.py    # optional: download laws if LAW_API_OC is configured
 python scripts/build_index.py   # chunk (+ embed if a Gemini key is set)
 uvicorn visarag.api:app --reload --app-dir src
 # open http://localhost:8000      API docs: http://localhost:8000/docs
@@ -97,6 +97,17 @@ Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) and
 `GEMINI_API_KEY` in your local `.env`. The backend uses Google's `google-genai` SDK for
 answers and embeddings. Without this key, it returns BM25 search results and sources.
 The key stays on the backend; neither the browser nor Telegram users need it.
+Set `SEARCH_ONLY=true` in `.env` to disable Gemini calls even when a key is saved.
+Restart the server after changing `.env`.
+The website calls this mode **Guide search** and shows original passages by default.
+The **Search options** section explains the available methods without requiring RAG terminology.
+
+Four official HiKorea guide extracts for D-2, D-4, D-10 and E-7 are included in
+`data/raw/`, from the residence manual dated October 19, 2026. You can build an index
+from these files without a law API account. For a fully local run, set
+`SEARCH_ONLY=true`, run `python scripts/build_index.py --no-embed`, then start the web server.
+Source provenance, extraction details and the guide's separate license are in
+[data/SOURCES.md](data/SOURCES.md). Keyword search works best with Korean terms and visa codes.
 
 `GEMINI_CHAT_MODEL` defaults to `gemini-flash-latest`, a changing model alias. Set a specific
 model ID when comparing evaluation runs. `GEMINI_EMBED_MODEL` defaults to the text-only
@@ -155,7 +166,7 @@ tests/           unit + API tests
 - [x] Article-aware chunking, Korean tokenizer, hybrid retrieval
 - [x] Cited answers, search-only mode, web app, REST API, tests, CI
 - [x] Telegram bot interface
-- [ ] Collect HiKorea guides for D-2, D-4, D-10, E-7
+- [x] Collect HiKorea guides for D-2, D-4, D-10, E-7
 - [ ] Label 30+ evaluation questions and publish results
 - [ ] Deploy a public demo
 - [ ] Cross-encoder reranker, Upstage Solar comparison

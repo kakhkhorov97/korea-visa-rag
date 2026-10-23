@@ -20,9 +20,10 @@ GEMINI_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
 LAW_API_OC = os.getenv("LAW_API_OC", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
-# Without a Gemini key the project still runs in free "search-only" mode:
+# Without a Gemini key, or when explicitly requested, use free "search-only" mode:
 # BM25 keyword search returns the most relevant articles, with no AI-written answer.
-HAS_GEMINI = bool(GEMINI_API_KEY)
+SEARCH_ONLY = os.getenv("SEARCH_ONLY", "false").strip().lower() in {"true", "1", "yes"}
+HAS_GEMINI = bool(GEMINI_API_KEY) and not SEARCH_ONLY
 
 # Retrieval settings (tune these during evaluation)
 TOP_K = 5                 # chunks handed to the LLM

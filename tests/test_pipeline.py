@@ -136,6 +136,10 @@ def test_api_endpoints(chunks):
         assert res["mode"] == "search-only" and res["sources"][0]["chunk_id"] == chunks[2].chunk_id
         assert client.post("/api/ask", json={"question": ""}).status_code == 422
         assert client.get("/").status_code == 200
+        assert health["modes"] == ["bm25"]  # UI disables unavailable search methods.
+        for asset in ["/static/app.js", "/static/styles.css"]:
+            response = client.get(asset)
+            assert response.status_code == 200 and response.text.strip()
     finally:
         api.get_assistant = original
 
@@ -362,3 +366,30 @@ def test_missing_gemini_key_keeps_search_only(chunks, monkeypatch):
     assert engine.available_modes == ["bm25"]
     assert answer.mode == "search-only"
     assert answer.sources[0].chunk_id == chunks[3].chunk_id
+
+
+@pytest.mark.parametrize("setting", ["true", "1", "YES"])
+def test_search_only_setting_disables_saved_gemini_key(setting, monkeypatch):
+    import runpy
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-a-real-credential")
+    monkeypatch.setenv("SEARCH_ONLY", setting)
+    config = runpy.run_path(str(ROOT / "src" / "visarag" / "config.py"))
+    assert config["GEMINI_API_KEY"]
+    assert config["SEARCH_ONLY"] is True
+    assert config["HAS_GEMINI"] is False
+
+
+def test_imported_guides_have_official_source_metadata():
+    from datetime import date
+
+    from visarag.documents import load_documents
+
+    docs = {d.doc_id: d for d in load_documents(ROOT / "data" / "raw")}
+    for visa in ["d2", "d4", "d10", "e7"]:
+        doc = docs[f"hikorea_{visa}"]
+        assert doc.doc_type == "guide" and len(doc.text) > 1000
+        assert doc.source_url.startswith("https://www.hikorea.go.kr/")
+        assert date.fromisoformat(doc.retrieved)
+        assert len(doc.extra["source_sha256"]) == 64
+        assert "KOGL Type 4" in doc.extra["license"]

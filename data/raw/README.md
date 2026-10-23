@@ -1,5 +1,14 @@
 # Source documents go here
 
+The four `hikorea_*.txt` files contain official Ministry of Justice guide sections for
+D-2, D-4, D-10 and E-7. Their source manual is dated October 19, 2026 and was retrieved
+on October 23, 2026. See [../SOURCES.md](../SOURCES.md) for provenance and licensing.
+They can be indexed without a government API account:
+
+```bash
+python scripts/build_index.py --no-embed
+```
+
 Two ways to add documents:
 
 1. **Laws (automatic):** run `python scripts/fetch_laws.py` after setting `LAW_API_OC` in `.env`.

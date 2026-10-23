@@ -7,6 +7,7 @@ const input = $("#question");
 const sendBtn = $("#send");
 const showText = $("#show-text");
 const status = $("#status");
+const modeNames = { bm25: "Keyword search", vector: "Meaning search", hybrid: "Combined search" };
 
 const BOT_ICON = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -53,7 +54,7 @@ function renderSources(sources, cited) {
         <pre class="passage" ${showText.checked ? "" : "hidden"}>${escapeHtml(s.text)}</pre>
       </div>`;
   }).join("");
-  return `<div class="sources"><span class="label">Sources</span>${items}</div>`;
+  return `<div class="sources"><span class="label">Official sources</span>${items}</div>`;
 }
 
 function addUserMessage(text) {
@@ -76,11 +77,18 @@ function addBotMessage() {
 
 function renderAnswer(card, data) {
   const searchOnly = data.mode === "search-only";
-  const tokens = data.usage?.total_tokens ? ` · ${data.usage.total_tokens} tokens` : "";
+  const answer = searchOnly
+    ? (data.sources.length
+      ? "Here are matching passages from official guides. Open a source link to read the full guide."
+      : "No matching passages found. Try a visa code or different Korean keywords.")
+    : data.answer;
+  const count = data.sources.length;
+  const sourceLabel = count === 1 ? "passage" : "passages";
+  const method = searchOnly ? "Guide search" : (modeNames[data.mode] || "Search");
   card.innerHTML = `
-    <div class="answer${searchOnly ? " note" : ""}">${formatAnswer(data.answer)}</div>
+    <div class="answer${searchOnly ? " note" : ""}">${formatAnswer(answer)}</div>
     ${renderSources(data.sources, data.cited || [])}
-    <span class="meta">${escapeHtml(data.mode)} · ${data.sources.length} sources · ${data.latency_s}s${tokens}</span>`;
+    <span class="meta">${escapeHtml(method)} · ${count} ${sourceLabel} · ${escapeHtml(data.latency_s)}s</span>`;
 }
 
 async function ask(question) {
@@ -115,7 +123,7 @@ form.addEventListener("submit", (e) => {
 });
 
 document.querySelectorAll(".example").forEach((btn) =>
-  btn.addEventListener("click", () => ask(btn.textContent.trim())));
+  btn.addEventListener("click", () => ask(btn.dataset.query || btn.textContent.trim())));
 
 showText.addEventListener("change", () =>
   document.querySelectorAll(".passage").forEach((p) => (p.hidden = !showText.checked)));
@@ -126,8 +134,27 @@ fetch("/api/health")
   .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
   .then(({ ok, d }) => {
     if (!ok) throw new Error(d.detail);
-    status.textContent = d.llm ? "AI answers on" : "Search-only mode";
-    status.className = `pill ${d.llm ? "pill-ok" : "pill-warn"}`;
+    status.textContent = d.llm ? "AI answers on" : "Guide search";
+    status.className = `pill ${d.llm ? "pill-ok" : "pill-muted"}`;
+    $("#search-help").textContent = d.llm
+      ? "Ask in English or Korean. Answers include links to the official passages used."
+      : "Keyword search is on. Use a visa code or Korean keywords to find original guide passages.";
+    const meaningAvailable = d.modes.includes("vector");
+    $("#mode-help").textContent = meaningAvailable
+      ? "Choose how to find passages. This changes the search method, not the source documents."
+      : "Meaning search is not enabled in this session, so meaning and combined search are unavailable.";
+    if (!d.llm) {
+      $("#empty-title")?.replaceChildren("Search the official visa guides");
+      $("#empty-help")?.replaceChildren("Try a visa code or Korean keywords, such as D-10 체류기간. You will see original passages and source links, without an AI-written answer.");
+      input.placeholder = "Try D-10 체류기간 or D-2 시간제 취업";
+      $("#examples-title").textContent = "Try a search";
+      document.querySelectorAll(".example").forEach((button) => {
+        button.textContent = button.dataset.localExample;
+        button.dataset.query = button.dataset.localQuery;
+      });
+      showText.checked = true;
+      document.querySelectorAll(".passage").forEach((p) => (p.hidden = false));
+    }
     document.querySelectorAll('input[name="mode"]').forEach((r) => {
       r.disabled = !d.modes.includes(r.value);
       if (r.disabled && r.checked) document.querySelector('input[value="bm25"]').checked = true;

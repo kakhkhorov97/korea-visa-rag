@@ -44,7 +44,8 @@ def main() -> None:
 
     if args.no_embed or not HAS_GEMINI:
         if not HAS_GEMINI:
-            print("No GEMINI_API_KEY: skipped embeddings. The app will run in free search-only mode.")
+            print("Gemini disabled or no key configured: skipped embeddings. "
+                  "The app will run in free search-only mode.")
         return
     from visarag import llm
     from visarag.retrieval import VectorRetriever

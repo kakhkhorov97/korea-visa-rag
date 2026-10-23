@@ -23,7 +23,10 @@ Almost every "AI engineer" job in Korea right now involves building or improving
 
 ## Lesson 1: Data (`documents.py`, `scripts/fetch_laws.py`) (1–2 h)
 
+- Start with the four included HiKorea guide extracts in `data/raw/`. These work without a
+  law API account. Read `data/SOURCES.md` for their origin, version and license.
 - Get a free key at open.law.go.kr, put it in `.env`, run `python scripts/fetch_laws.py`.
+  This is optional and adds laws alongside the guides.
 - Open `data/raw/immigration_act_decree.txt`. Notice the 제N조 / ①② / 1. 2. structure.
 - Why metadata matters: `source_url` and `retrieved` are what make citations possible.
 - The loader preserves URL anchors such as `#article-2`. Inline metadata comments start
@@ -112,9 +115,15 @@ You'll have a table.
 - Run `uvicorn visarag.api:app --reload --app-dir src` and open http://localhost:8000/docs.
   FastAPI generated that page from the `AskRequest` model. Try `/api/ask` from there.
 - In `web/app.js`, follow one question: `ask()` → `fetch("/api/ask")` → `renderAnswer()`.
+- The optional **Search options** panel uses friendly labels: Keyword search = `bm25`,
+  Meaning search = `vector`, Combined search = `hybrid`. The API still uses those original
+  mode values. In local mode, the UI explains the Korean keyword limitation and shows
+  original passages by default. Provider setup instructions stay out of the result cards.
 - Why `escapeHtml()` runs before `formatAnswer()`: answers and sources are untrusted text, so
   escaping first prevents HTML/script injection (XSS). Interviewers like this question.
 - With no `GEMINI_API_KEY`, `/api/health` reports `"llm": false` and the UI switches to search-only mode.
+- `SEARCH_ONLY=true` forces the same local mode even when a Gemini key is saved. Restart
+  the server after editing `.env`. This also skips embedding calls when building the index.
 - `AskRequest.strip_question` runs before length validation. A question containing only spaces
   gets HTTP 422 instead of reaching retrieval. Valid questions lose surrounding whitespace.
 - `/api/search` uses `BeforeValidator(str.strip)` to trim `q` before checking its 2 to 500
