@@ -1,0 +1,10 @@
+---
+title: 출입국관리법
+source_url: https://www.law.go.kr/lsLinkProc.do?lsNm=%EC%B6%9C%EC%9E%85%EA%B5%AD%EA%B4%80%EB%A6%AC%EB%B2%95&joNo=002000&mode=11
+doc_type: law
+retrieved: 2026-10-24
+statute_version: 290729
+text_sha256: 6cc559c8977607fb49ce1946314c216177d4a88215c9d5ab64ae4649d0ee6a91
+---
+제20조(체류자격 외 활동) 대한민국에 체류하는 외국인이 그 체류자격에 해당하는 활동과 함께 다른 체류자격에 해당하는 활동을 하려면 대통령령으로 정하는 바에 따라 미리 법무부장관의 체류자격 외 활동허가를 받아야 한다. <개정 2020.6.9>
+[전문개정 2010.5.14]

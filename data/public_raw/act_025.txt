@@ -1,0 +1,11 @@
+---
+title: 출입국관리법
+source_url: https://www.law.go.kr/lsLinkProc.do?lsNm=%EC%B6%9C%EC%9E%85%EA%B5%AD%EA%B4%80%EB%A6%AC%EB%B2%95&joNo=002500&mode=11
+doc_type: law
+retrieved: 2026-10-24
+statute_version: 290729
+text_sha256: 03e178f0e59a2321fb5b30f4d76fd9c97d6d6013ceaa5bf9394870cc7658f820
+---
+제25조(체류기간 연장허가) ① 외국인이 체류기간을 초과하여 계속 체류하려면 대통령령으로 정하는 바에 따라 체류기간이 끝나기 전에 법무부장관의 체류기간 연장허가를 받아야 한다. <개정 2020.6.9>
+② 제1항에 따른 체류기간 연장허가의 심사기준은 법무부령으로 정한다. <신설 2020.6.9>
+[전문개정 2010.5.14]

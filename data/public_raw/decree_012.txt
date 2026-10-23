@@ -1,0 +1,10 @@
+---
+title: 출입국관리법 시행령
+source_url: https://www.law.go.kr/lsLinkProc.do?lsNm=%EC%B6%9C%EC%9E%85%EA%B5%AD%EA%B4%80%EB%A6%AC%EB%B2%95+%EC%8B%9C%ED%96%89%EB%A0%B9&joNo=001200&mode=11
+doc_type: law
+retrieved: 2026-10-24
+statute_version: 290501
+text_sha256: aa20e89074333f7644371223ba12083d6747a32d9f53886d5e1ff2f2b4367fd1
+---
+제12조(일반체류자격) 법 제10조의2제1항제1호에 따른 단기체류자격과 같은 항 제2호에 따른 장기체류자격의 종류, 체류자격에 해당하는 사람 또는 그 체류자격에 따른 활동범위는 각각 별표 1 및 별표 1의2와 같다.
+[전문개정 2018.9.18]

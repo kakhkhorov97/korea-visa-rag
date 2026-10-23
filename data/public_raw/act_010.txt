@@ -1,0 +1,12 @@
+---
+title: 출입국관리법
+source_url: https://www.law.go.kr/lsLinkProc.do?lsNm=%EC%B6%9C%EC%9E%85%EA%B5%AD%EA%B4%80%EB%A6%AC%EB%B2%95&joNo=001000&mode=11
+doc_type: law
+retrieved: 2026-10-24
+statute_version: 290729
+text_sha256: 482c0b9d59e2319cba2723f030306ee89225bd66fada240c66df1d187bbc38c8
+---
+제10조(체류자격) 입국하려는 외국인은 다음 각 호의 어느 하나에 해당하는 체류자격을 가져야 한다.
+1. 일반체류자격: 이 법에 따라 대한민국에 체류할 수 있는 기간이 제한되는 체류자격
+2. 영주자격: 대한민국에 영주(永住)할 수 있는 체류자격
+[전문개정 2018.3.20]
