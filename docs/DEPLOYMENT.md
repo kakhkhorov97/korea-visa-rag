@@ -65,8 +65,10 @@ These limits are suitable for a small demo, not a general public API service.
 ## Verification status
 
 The local suite exercises real FastAPI, Chroma, Kiwi and BM25 without API keys.
-The statute-only app is being checked locally in free and Gemini modes;
-see the handoff status for the latest completed checks.
+The statute-only app passed local health, homepage, keyword-search and real
+Gemini-answer smoke checks. Free mode passed with provider calls disabled.
+Desktop and mobile rendering were checked, and the README screenshot is a real
+local statute-only answer.
 `.github/workflows/container.yml` builds the image, checks secret canaries are
 excluded, starts keyless, then tests health, the homepage and a cited search.
 Docker is unavailable on the current development machine, so container execution

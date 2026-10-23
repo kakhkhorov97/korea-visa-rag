@@ -9,8 +9,8 @@ using only official government sources.
 **Status:** 🚧 In development. Core pipeline, web app and tests are implemented; data collection,
 a first statute-corpus retrieval evaluation is complete; public deployment is pending.
 
-![UI design mockup](docs/images/mockup.png)
-*UI design mockup. A screenshot of the running app will replace it.*
+![Running Korea Visa Assistant](docs/images/screenshot.png)
+*Local statute-only app with a real Gemini answer and official citations, captured 2026-10-24. This is not a public deployment.*
 
 ## Why
 
