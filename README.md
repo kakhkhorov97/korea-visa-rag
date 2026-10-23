@@ -66,6 +66,8 @@ the Telegram bot for people who want quick answers in a messenger.
 
 _Planned. Will be filled in from `python eval/run_eval.py` on a labeled question set._
 
+Use `python eval/run_eval.py --k 10` to score the top 10 results. `--k` must be a positive integer.
+
 | Retrieval | hit@5 | recall@5 | MRR |
 |---|---|---|---|
 | BM25 | – | – | – |

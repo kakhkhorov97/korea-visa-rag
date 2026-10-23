@@ -91,6 +91,9 @@ Watch it start guessing. Put the rule back. This is how you learn why guardrails
 
 ## Lesson 6: Evaluation (`metrics.py`, `eval/run_eval.py`) (3–4 h) ← most important
 
+The `--k` argument controls how many top results count toward hit@k and recall@k.
+It defaults to 5. Zero and negative values are rejected before questions or the index load.
+
 1. For each question in `eval/questions.jsonl`, run `find_chunks.py` and copy the correct
    chunk IDs into `"relevant"`. Add your own questions until you have **30+** (half Korean, half English).
 2. Run `python eval/run_eval.py`. You'll get a table for bm25 / vector / hybrid.

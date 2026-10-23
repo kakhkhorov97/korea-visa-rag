@@ -80,9 +80,11 @@ def eval_answers(assistant: VisaAssistant, questions: list[dict]) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--questions", default=str(ROOT / "eval" / "questions.jsonl"))
-    parser.add_argument("--k", type=int, default=5)
+    parser.add_argument("--k", type=int, default=5, help="Number of top results to score (at least 1)")
     parser.add_argument("--answers", action="store_true")
     args = parser.parse_args()
+    if args.k < 1:
+        parser.error("--k must be at least 1")
 
     questions = load_questions(Path(args.questions))
     assistant = VisaAssistant()
