@@ -1,6 +1,6 @@
 # Learning Guide: understand every part of this project
 
-Work through these lessons in order. Lessons 1–6 work without an OpenAI key (search-only mode);
+Work through these lessons in order. Lessons 1–6 work without a Gemini key (search-only mode);
 the vector and AI-answer parts need one. Each one: read the file, run something, do the small exercise.
 By the end you should be able to rebuild any part from scratch and defend every design choice in an
 interview. **Do the exercises: changing code yourself is what turns "I have this repo" into "I built this."**
@@ -66,6 +66,9 @@ compare evaluation scores. This experiment is a great résumé line ("article-ba
 - An **embedding** turns text into a list of numbers where similar meanings are close together.
   That's why an English question can find a Korean article.
 - Chroma stores those vectors and finds the nearest ones (cosine similarity).
+- `llm.embed` uses Gemini's `RETRIEVAL_DOCUMENT` task for stored passages;
+  `llm.embed_query` uses `RETRIEVAL_QUERY` for questions. Both use `gemini-embedding-001`.
+  Rebuild the index if you change embedding providers or models.
 
 **Exercise:** ask an English question in the app with mode = `bm25`, then `vector`. Notice BM25
 fails across languages and vector search doesn't.
@@ -77,6 +80,8 @@ fails across languages and vector search doesn't.
 - **RRF:** each retriever votes by rank (`1 / (60 + rank)`). Chunks both retrievers like rise to the top.
   It ignores raw scores, which live on different scales.
 - Read `SYSTEM_PROMPT`. Every rule exists to prevent a failure: no citations, guessing, wrong language.
+- `llm.chat` converts our message list into Gemini contents and a separate system instruction.
+  It also maps Gemini token counts to the keys used by `Answer` and the evaluation script.
 - `cited_numbers` checks which sources the answer actually used; the UI marks them ✅.
 
 **Exercise:** delete rule 3 from the prompt and ask "What is the E-9 visa?" (not in your data).
@@ -104,7 +109,11 @@ You'll have a table.
 - In `web/app.js`, follow one question: `ask()` → `fetch("/api/ask")` → `renderAnswer()`.
 - Why `escapeHtml()` runs before `formatAnswer()`: answers and sources are untrusted text, so
   escaping first prevents HTML/script injection (XSS). Interviewers like this question.
-- With no `OPENAI_API_KEY`, `/api/health` reports `"llm": false` and the UI switches to search-only mode.
+- With no `GEMINI_API_KEY`, `/api/health` reports `"llm": false` and the UI switches to search-only mode.
+- `AskRequest.strip_question` runs before length validation. A question containing only spaces
+  gets HTTP 422 instead of reaching retrieval. Valid questions lose surrounding whitespace.
+- `/api/search` uses `BeforeValidator(str.strip)` to trim `q` before checking its 2 to 500
+  character length. Invalid queries get HTTP 422 before the assistant loads.
 
 **Exercise:** add a "Copy answer" button to each answer card.
 
@@ -113,7 +122,7 @@ You'll have a table.
 - Create a bot with @BotFather, add the token to `.env`, run `PYTHONPATH=src python -m visarag.telegram_bot`.
 - Notice the bot reuses `VisaAssistant` unchanged. Separating the engine from the interface is
   the main architecture point to explain in interviews.
-- `asyncio.to_thread(...)`: the bot is async, but `assistant.ask` blocks while calling OpenAI.
+- `asyncio.to_thread(...)`: the bot is async, but `assistant.ask` blocks while calling Gemini.
   Running it in a thread keeps the bot responsive to other users meanwhile.
 - `format_answer_html` escapes text before adding tags (same XSS idea as the web app) and
   `truncate` keeps replies under Telegram's 4,096-character limit.
@@ -126,7 +135,7 @@ You'll have a table.
 
 - Push to GitHub (check `.env` is **not** committed).
 - Deploy the Docker image to a host such as Render, Railway, Fly.io or Hugging Face Spaces (Docker);
-  add `OPENAI_API_KEY` as a secret, or leave it out to run in free search-only mode.
+  add `GEMINI_API_KEY` as a secret, or leave it out to run in free search-only mode.
 - Record a 1-minute demo video. Write a velog post: problem → design → results → what you learned.
 
 ---
@@ -134,7 +143,7 @@ You'll have a table.
 ## Upgrades (each one = a résumé bullet with a number)
 
 - Add a cross-encoder **reranker** after hybrid retrieval, measure the change in MRR.
-- Compare **Upstage Solar** vs OpenAI (only `llm.py` changes).
+- Compare **Upstage Solar** vs Gemini (only `llm.py` changes).
 - Add a **FastAPI** endpoint so other apps can call it.
 - Add housing / lease rules as a second domain.
 

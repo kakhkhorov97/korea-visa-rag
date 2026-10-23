@@ -1,7 +1,7 @@
 """Turn data/raw/*.txt into chunks and a searchable vector index.
 
 Run after adding or changing documents:
-  python scripts/build_index.py            # chunk + embed (embeds only if OPENAI_API_KEY is set)
+  python scripts/build_index.py            # chunk + embed (embeds only if GEMINI_API_KEY is set)
   python scripts/build_index.py --no-embed # chunk only, free (search-only mode still works)
 """
 
@@ -40,11 +40,11 @@ def main() -> None:
         print(f"  {doc_id}: {n} chunks")
     print(f"chunk length: median {lengths[len(lengths) // 2]} chars, max {lengths[-1]} chars")
 
-    from visarag.config import HAS_OPENAI
+    from visarag.config import HAS_GEMINI
 
-    if args.no_embed or not HAS_OPENAI:
-        if not HAS_OPENAI:
-            print("No OPENAI_API_KEY: skipped embeddings. The app will run in free search-only mode.")
+    if args.no_embed or not HAS_GEMINI:
+        if not HAS_GEMINI:
+            print("No GEMINI_API_KEY: skipped embeddings. The app will run in free search-only mode.")
         return
     from visarag import llm
     from visarag.retrieval import VectorRetriever

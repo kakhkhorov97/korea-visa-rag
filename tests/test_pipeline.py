@@ -116,12 +116,61 @@ def test_api_endpoints(chunks):
         client = TestClient(api.app)
         health = client.get("/api/health").json()
         assert health["llm"] is False and health["chunks"] == len(chunks)
-        res = client.post("/api/ask", json={"question": "D-10 구직 체류기간"}).json()
+        res = client.post("/api/ask", json={"question": "  D-10 구직 체류기간\n"}).json()
+        assert res["question"] == "D-10 구직 체류기간"
         assert res["mode"] == "search-only" and res["sources"][0]["chunk_id"] == chunks[2].chunk_id
         assert client.post("/api/ask", json={"question": ""}).status_code == 422
         assert client.get("/").status_code == 200
     finally:
         api.get_assistant = original
+
+
+@pytest.mark.parametrize("question", ["", "   ", "\t\n", " a ", "가" * 501, None, 42])
+def test_api_rejects_invalid_questions(question, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from visarag import api
+
+    def unexpected_assistant():
+        pytest.fail("Invalid questions must be rejected before loading the assistant")
+
+    monkeypatch.setattr(api, "get_assistant", unexpected_assistant)
+    response = TestClient(api.app).post("/api/ask", json={"question": question})
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["body", "question"]
+
+
+@pytest.mark.parametrize("query", ["", "   ", "\t\n", " a ", "가" * 501])
+def test_search_rejects_invalid_queries(query, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from visarag import api
+
+    def unexpected_assistant():
+        pytest.fail("Invalid search queries must be rejected before loading the assistant")
+
+    monkeypatch.setattr(api, "get_assistant", unexpected_assistant)
+    response = TestClient(api.app).get("/api/search", params={"q": query})
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["query", "q"]
+
+
+def test_search_trims_query(chunks, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from visarag import api
+
+    class SearchAssistant:
+        def retrieve(self, query, mode, k):
+            assert query == "D-10 구직"
+            assert mode == "bm25" and k == 5
+            return chunks[:1]
+
+    monkeypatch.setattr(api, "get_assistant", lambda: SearchAssistant())
+    response = TestClient(api.app).get("/api/search", params={"q": "  D-10 구직\n"})
+    assert response.status_code == 200
+    assert response.json()["query"] == "D-10 구직"
+    assert response.json()["results"][0]["chunk_id"] == chunks[0].chunk_id
 
 
 def test_telegram_formatting(chunks):
@@ -153,7 +202,148 @@ def test_vector_retriever_with_fake_embeddings(chunks):
     def fake_embed(texts):        # bag-of-keywords vectors, deterministic and free
         return [[float(t.count(w)) + 0.01 for w in vocab] for t in texts]
 
-    vr = VectorRetriever(fake_embed)
+    queries = []
+
+    def fake_query_embed(texts):
+        queries.extend(texts)
+        return fake_embed(texts)
+
+    vr = VectorRetriever(fake_embed, query_embed_fn=fake_query_embed)
     vr.build(chunks)
     top_id, _ = vr.search("시간제")[0]
     assert top_id == chunks[3].chunk_id
+    assert queries == ["시간제"]
+
+
+@pytest.fixture
+def gemini_models(monkeypatch):
+    """Use real SDK types, but replace the network client so tests stay free."""
+    from unittest.mock import Mock
+
+    from visarag import llm
+
+    fake = Mock()
+    monkeypatch.setattr(llm, "client", lambda: fake)
+    return fake.models
+
+
+def test_gemini_embeddings_use_document_and_query_tasks(gemini_models):
+    from google.genai import types
+
+    from visarag import llm
+
+    gemini_models.embed_content.return_value = types.EmbedContentResponse(
+        embeddings=[types.ContentEmbedding(values=[1.0, 0.0]),
+                    types.ContentEmbedding(values=[0.0, 1.0])]
+    )
+    assert llm.embed(["article one", "article two"]) == [[1.0, 0.0], [0.0, 1.0]]
+    assert gemini_models.embed_content.call_args.kwargs["config"].task_type == "RETRIEVAL_DOCUMENT"
+    gemini_models.embed_content.return_value = types.EmbedContentResponse(
+        embeddings=[types.ContentEmbedding(values=[1.0, 0.0])]
+    )
+    assert llm.embed_query(["question"]) == [[1.0, 0.0]]
+    assert gemini_models.embed_content.call_args.kwargs["config"].task_type == "RETRIEVAL_QUERY"
+
+
+def test_gemini_empty_embedding_input_makes_no_request(gemini_models):
+    from visarag import llm
+
+    assert llm.embed([]) == []
+    gemini_models.embed_content.assert_not_called()
+
+
+def test_gemini_rejects_missing_embeddings(gemini_models):
+    from google.genai import types
+
+    from visarag import llm
+
+    gemini_models.embed_content.return_value = types.EmbedContentResponse(embeddings=[])
+    with pytest.raises(ValueError, match="one embedding per input"):
+        llm.embed(["article"])
+
+
+def test_gemini_chat_preserves_instructions_roles_and_usage(gemini_models):
+    from google.genai import types
+
+    from visarag import llm
+
+    gemini_models.generate_content.return_value = types.GenerateContentResponse(
+        candidates=[types.Candidate(content=types.Content(
+            role="model", parts=[types.Part.from_text(text="Answer [1].")]))],
+        usage_metadata=types.GenerateContentResponseUsageMetadata(
+            prompt_token_count=10, candidates_token_count=5, total_token_count=18),
+    )
+    answer, usage = llm.chat([
+        {"role": "system", "content": "Use only the sources and cite them."},
+        {"role": "user", "content": "Earlier question"},
+        {"role": "assistant", "content": "Earlier answer"},
+        {"role": "user", "content": "Sources: [1] passage. Question: can I work?"},
+    ])
+    request = gemini_models.generate_content.call_args.kwargs
+    assert request["config"].system_instruction == "Use only the sources and cite them."
+    assert [c.role for c in request["contents"]] == ["user", "model", "user"]
+    assert request["contents"][-1].parts[0].text.startswith("Sources: [1]")
+    assert answer == "Answer [1]."
+    assert usage == {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 18}
+
+
+def test_gemini_rejects_empty_answer(gemini_models):
+    from google.genai import types
+
+    from visarag import llm
+
+    gemini_models.generate_content.return_value = types.GenerateContentResponse()
+    with pytest.raises(ValueError, match="no answer text"):
+        llm.chat([{"role": "user", "content": "question"}])
+
+
+def test_gemini_requires_key(monkeypatch):
+    from visarag import llm
+
+    llm.client.cache_clear()
+    monkeypatch.setattr(llm, "GEMINI_API_KEY", "")
+    with pytest.raises(ValueError, match="GEMINI_API_KEY"):
+        llm.client()
+
+
+def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypatch, tmp_path):
+    from google.genai import types
+
+    from visarag import assistant, llm
+    from visarag.retrieval import VectorRetriever
+
+    def fake_embed_content(*, contents, **kwargs):
+        return types.EmbedContentResponse(embeddings=[
+            types.ContentEmbedding(values=[float(text.count("시간제")) + 0.01, 1.0])
+            for text in contents
+        ])
+
+    gemini_models.embed_content.side_effect = fake_embed_content
+    gemini_models.generate_content.return_value = types.GenerateContentResponse(
+        candidates=[types.Candidate(content=types.Content(
+            role="model", parts=[types.Part.from_text(text="Test answer [1].")]))],
+    )
+    monkeypatch.setattr(assistant, "INDEX_DIR", tmp_path)
+    monkeypatch.setattr(assistant, "HAS_GEMINI", True)
+    VectorRetriever(llm.embed, persist_dir=str(tmp_path)).build(chunks)
+    engine = assistant.VisaAssistant(chunks=chunks)
+    answer = engine.ask("시간제 취업 허가")
+    assert engine.available_modes == ["hybrid", "bm25", "vector"]
+    assert answer.mode == "hybrid" and answer.cited == [1]
+    assert answer.sources[0].chunk_id == chunks[3].chunk_id
+    assert gemini_models.embed_content.call_args.kwargs["config"].task_type == "RETRIEVAL_QUERY"
+    request = gemini_models.generate_content.call_args.kwargs
+    assert chunks[3].text in request["contents"][0].parts[0].text
+    assert request["config"].system_instruction == assistant.SYSTEM_PROMPT
+
+
+def test_missing_gemini_key_keeps_search_only(chunks, monkeypatch):
+    from visarag import assistant, llm
+
+    monkeypatch.setattr(assistant, "HAS_GEMINI", False)
+    monkeypatch.setattr(llm, "client", lambda: pytest.fail("Search-only must not call Gemini"))
+    engine = assistant.VisaAssistant(chunks=chunks)
+    answer = engine.ask("시간제 취업 허가")
+    assert engine.available_modes == ["bm25"]
+    assert answer.mode == "search-only"
+    assert answer.sources[0].chunk_id == chunks[3].chunk_id

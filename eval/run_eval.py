@@ -45,7 +45,7 @@ def eval_retrieval(assistant: VisaAssistant, questions: list[dict], k: int) -> d
         report[mode] = summarize(rows, k)
 
     if not assistant.use_llm:
-        print("(search-only mode: add OPENAI_API_KEY to also evaluate vector and hybrid)\n")
+        print("(search-only mode: add GEMINI_API_KEY to also evaluate vector and hybrid)\n")
     header = f"{'mode':<8}" + "".join(f"{m:>11}" for m in report["bm25"] if m != "n")
     print(header + "\n" + "-" * len(header))
     for mode, s in report.items():
@@ -89,7 +89,7 @@ def main() -> None:
     result = {"retrieval": eval_retrieval(assistant, questions, args.k)}
     if args.answers:
         if not assistant.use_llm:
-            sys.exit("--answers needs OPENAI_API_KEY in .env")
+            sys.exit("--answers needs GEMINI_API_KEY in .env")
         result["answers"] = eval_answers(assistant, questions)
 
     out_dir = ROOT / "eval" / "results"

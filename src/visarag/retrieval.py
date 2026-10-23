@@ -40,10 +40,12 @@ class VectorRetriever:
 
     COLLECTION = "visa_chunks"
 
-    def __init__(self, embed_fn: EmbedFn, persist_dir: str | None = None):
+    def __init__(self, embed_fn: EmbedFn, persist_dir: str | None = None,
+                 query_embed_fn: EmbedFn | None = None):
         import chromadb
 
         self.embed_fn = embed_fn
+        self.query_embed_fn = query_embed_fn or embed_fn
         client = chromadb.PersistentClient(path=persist_dir) if persist_dir else chromadb.Client()
         self.collection = client.get_or_create_collection(
             self.COLLECTION, metadata={"hnsw:space": "cosine"}
@@ -63,7 +65,7 @@ class VectorRetriever:
         if self.collection.count() == 0:
             return []
         res = self.collection.query(
-            query_embeddings=self.embed_fn([query]),
+            query_embeddings=self.query_embed_fn([query]),
             n_results=min(k, self.collection.count()),
         )
         # Chroma returns cosine *distance*; convert to similarity so higher = better.

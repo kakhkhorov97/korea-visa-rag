@@ -1,7 +1,7 @@
 """The assistant: retrieve -> build a grounded prompt -> answer with citations.
 
 Two operating modes:
-* full mode        (OPENAI_API_KEY set): hybrid retrieval + AI-written, cited answer
+* full mode        (GEMINI_API_KEY set): hybrid retrieval + AI-written, cited answer
 * search-only mode (no key, free)      : BM25 retrieval, returns the top sources only
 """
 
@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, field
 
 from .chunking import Chunk
-from .config import CHUNKS_FILE, HAS_OPENAI, INDEX_DIR, TOP_K
+from .config import CHUNKS_FILE, HAS_GEMINI, INDEX_DIR, TOP_K
 from .retrieval import BM25Retriever, HybridRetriever
 
 SYSTEM_PROMPT = """You are a careful assistant that answers questions about Korean visa \
@@ -29,7 +29,7 @@ Immigration Contact Center (☎ 1345) or HiKorea. Never guess or use outside kno
 
 SEARCH_ONLY_NOTE = (
     "Search-only mode (no AI answer): these are the most relevant official passages "
-    "for your question. Add an OpenAI API key to get a written, cited answer."
+    "for your question. Add a Gemini API key to get a written, cited answer."
 )
 
 
@@ -83,7 +83,7 @@ class VisaAssistant:
         self.chunks = chunks if chunks is not None else load_chunks()
         self.by_id = {c.chunk_id: c for c in self.chunks}
         self.top_k = top_k
-        self.use_llm = HAS_OPENAI if use_llm is None else use_llm
+        self.use_llm = HAS_GEMINI if use_llm is None else use_llm
 
         bm25 = BM25Retriever(self.chunks)
         self.retrievers = {"bm25": bm25}
@@ -91,7 +91,8 @@ class VisaAssistant:
             from . import llm
             from .retrieval import VectorRetriever
 
-            vector = VectorRetriever(llm.embed, persist_dir=str(INDEX_DIR))
+            vector = VectorRetriever(llm.embed, persist_dir=str(INDEX_DIR),
+                                     query_embed_fn=llm.embed_query)
             self.retrievers["vector"] = vector
             self.retrievers["hybrid"] = HybridRetriever(bm25, vector)
         self.mode = mode if mode in self.retrievers else "bm25"

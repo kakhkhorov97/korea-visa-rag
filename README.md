@@ -38,7 +38,7 @@ data/raw (laws + guides)
    │  article-aware chunking (제N조 / 항 / 호 kept together)
    ▼
 chunks.jsonl ──► BM25 (Kiwi Korean tokenizer + visa-code tokens)
-             └─► Vector search (OpenAI embeddings in Chroma)
+             └─► Vector search (Gemini embeddings in Chroma)
                      │
                      ▼  Reciprocal Rank Fusion
                  top-5 chunks ──► LLM answer with [n] citations
@@ -77,16 +77,27 @@ _Planned. Will be filled in from `python eval/run_eval.py` on a labeled question
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env            # optional: add OPENAI_API_KEY; LAW_API_OC for law download
+cp .env.example .env            # optional: add GEMINI_API_KEY; LAW_API_OC for law download
 
 python scripts/fetch_laws.py    # download immigration laws from open.law.go.kr (free key)
-python scripts/build_index.py   # chunk (+ embed if an OpenAI key is set)
+python scripts/build_index.py   # chunk (+ embed if a Gemini key is set)
 uvicorn visarag.api:app --reload --app-dir src
 # open http://localhost:8000      API docs: http://localhost:8000/docs
 
 pytest -q                        # tests (no API key needed)
 python eval/run_eval.py          # compare retrieval methods
 ```
+
+Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) and set
+`GEMINI_API_KEY` in your local `.env`. The backend uses Google's `google-genai` SDK for
+answers and embeddings. Without this key, it returns BM25 search results and sources.
+The key stays on the backend; neither the browser nor Telegram users need it.
+
+`GEMINI_CHAT_MODEL` defaults to `gemini-flash-latest`, a changing model alias. Set a specific
+model ID when comparing evaluation runs. `GEMINI_EMBED_MODEL` defaults to the text-only
+`gemini-embedding-001`, which returns one vector per input text. Other embedding models may
+need different input handling. Rebuild with `python scripts/build_index.py` after changing
+embedding providers or models; old vectors cannot be reused with a different embedding space.
 
 Docker: `docker build -t korea-visa-rag . && docker run -p 8000:8000 --env-file .env korea-visa-rag`
 
@@ -100,7 +111,7 @@ PYTHONPATH=src python -m visarag.telegram_bot
 ```
 
 Commands: `/start`, `/help`, `/mode hybrid|bm25|vector`. Any other message is treated as a question.
-The bot uses long polling, so it needs no public URL. Without an OpenAI key it runs in search-only mode.
+The bot uses long polling, so it needs no public URL. Without a Gemini key it runs in search-only mode.
 
 ## API
 
@@ -110,6 +121,10 @@ curl -X POST localhost:8000/api/ask -H "Content-Type: application/json" \
 ```
 
 Returns the answer, the mode used, cited source numbers, and each source's citation, URL and text.
+Questions are trimmed before validation and must contain 2 to 500 characters after trimming.
+Invalid questions return HTTP 422 before the assistant runs.
+`GET /api/search?q=D-10` returns source passages without generating an answer.
+Its `q` parameter follows the same trimming and length rules as questions.
 
 ## Project structure
 
@@ -119,7 +134,7 @@ src/visarag/
   chunking.py    article-aware Korean law chunker
   tokenizer.py   Kiwi tokenizer + visa-code extraction
   retrieval.py   BM25, vector (Chroma), hybrid (RRF)
-  llm.py         OpenAI embedding/chat wrappers
+  llm.py         Gemini embedding/chat wrappers
   assistant.py   retrieve → prompt → cited answer (or search-only)
   metrics.py     hit@k, recall@k, MRR
   api.py         FastAPI app: JSON API + serves the web front end

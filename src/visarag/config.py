@@ -14,14 +14,15 @@ PROCESSED_DIR = ROOT / "data" / "processed"
 INDEX_DIR = ROOT / "data" / "index"
 CHUNKS_FILE = PROCESSED_DIR / "chunks.jsonl"
 
-OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")
-OPENAI_EMBED_MODEL = os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+GEMINI_CHAT_MODEL = os.getenv("GEMINI_CHAT_MODEL", "gemini-flash-latest")
+GEMINI_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
 LAW_API_OC = os.getenv("LAW_API_OC", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
-# Without an OpenAI key the project still runs in free "search-only" mode:
+# Without a Gemini key the project still runs in free "search-only" mode:
 # BM25 keyword search returns the most relevant articles, with no AI-written answer.
-HAS_OPENAI = bool(os.getenv("OPENAI_API_KEY"))
+HAS_GEMINI = bool(GEMINI_API_KEY)
 
 # Retrieval settings (tune these during evaluation)
 TOP_K = 5                 # chunks handed to the LLM
