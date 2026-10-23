@@ -14,6 +14,7 @@ Keeping the source URL and date on every document is what lets the assistant
 cite its answers later.
 """
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -39,7 +40,8 @@ def parse_document(raw: str, doc_id: str) -> Document:
             for line in parts[1].splitlines():
                 if ":" in line:
                     key, value = line.split(":", 1)
-                    meta[key.strip()] = value.split("#")[0].strip()
+                    # A URL fragment is data; only whitespace followed by # starts a comment.
+                    meta[key.strip()] = re.split(r"\s+#", value, maxsplit=1)[0].strip()
             body = parts[2]
     known = {"title", "source_url", "doc_type", "retrieved"}
     return Document(

@@ -26,6 +26,8 @@ Almost every "AI engineer" job in Korea right now involves building or improving
 - Get a free key at open.law.go.kr, put it in `.env`, run `python scripts/fetch_laws.py`.
 - Open `data/raw/immigration_act_decree.txt`. Notice the 제N조 / ①② / 1. 2. structure.
 - Why metadata matters: `source_url` and `retrieved` are what make citations possible.
+- The loader preserves URL anchors such as `#article-2`. Inline metadata comments start
+  with whitespace followed by `#`, so they do not remove the anchor from a citation link.
 
 **Exercise:** copy one HiKorea page about D-10 into a `.txt` file with the header from `data/raw/README.md`.
 

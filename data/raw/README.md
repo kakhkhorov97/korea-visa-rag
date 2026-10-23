@@ -19,3 +19,6 @@ retrieved: 2026-10-22
 
 Use only official government sources, and always fill in `source_url` and `retrieved`:
 the assistant cites them in every answer, and visa rules change often.
+
+URL anchors such as `#article-2` are preserved. To add an inline metadata comment,
+put whitespace before `#`, as in `doc_type: guide # split by heading`.

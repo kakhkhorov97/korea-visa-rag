@@ -53,6 +53,9 @@ chunks.jsonl ──► BM25 (Kiwi Korean tokenizer + visa-code tokens)
 One engine (`VisaAssistant`), two interfaces: the web app for browsers and recruiters,
 the Telegram bot for people who want quick answers in a messenger.
 
+Source document headers preserve URL anchors for links to specific sections.
+See [the source format](data/raw/README.md) when adding documents.
+
 | Problem | Choice |
 |---|---|
 | Fixed-size chunks cut legal rules in half | Split by article (조), keep paragraphs (항) and items (호) together |

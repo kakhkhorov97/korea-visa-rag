@@ -42,6 +42,21 @@ def test_law_split_by_article(chunks):
     assert "①" in article2 and "②" in article2 and "둘째 호" in article2   # 항/호 stay together
 
 
+@pytest.mark.parametrize("comment", ["", " # source section", "\t# source section"])
+def test_metadata_preserves_url_fragments(comment):
+    raw = (
+        "---\n"
+        f"source_url: https://example.com/guide#article-2{comment}\n"
+        "doc_type: guide # split by heading\n"
+        "---\n"
+        "Fixture text, not legal content.\n"
+    )
+    doc = parse_document(raw, "anchored_source")
+    assert doc.source_url == "https://example.com/guide#article-2"
+    assert doc.doc_type == "guide"
+    assert doc.text == "Fixture text, not legal content."
+
+
 def test_citation_label(chunks):
     assert chunks[3].citation() == "테스트용 가짜 법령 제2조의2(시간제 취업)"
 
