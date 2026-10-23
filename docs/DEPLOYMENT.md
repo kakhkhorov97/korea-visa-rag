@@ -71,9 +71,78 @@ Desktop and mobile rendering were checked, and the README screenshot is a real
 local statute-only answer.
 `.github/workflows/container.yml` builds the image, checks secret canaries are
 excluded, starts keyless, then tests health, the homepage and a cited search.
-Docker is unavailable on the current development machine, so container execution
-and the new CI workflow remain unverified until run on a Docker-enabled host.
-No GitHub Actions result is claimed before that run passes.
+Docker remains unavailable locally. GitHub Actions verified the pushed commit
+`04f01644e0f6bc7ef6b8bb55cd7923de433c6809` on 2026-10-24 Asia/Seoul:
+
+- Tests passed: https://github.com/kakhkhorov97/korea-visa-rag/actions/runs/39981558591
+- Docker smoke test passed: https://github.com/kakhkhorov97/korea-visa-rag/actions/runs/39981558539
+
+The subsequently prepared Render configuration has been validated locally
+against https://render.com/schema/render.yaml.json. It still needs to be
+committed/pushed by Sean if it will be deployed as a Git-based Blueprint.
 
 Keep the project marked "In development" until a public URL is deployed and its
 health, sources, limits, English/Korean replies and persistent cache are checked.
+
+
+## Free Render deployment
+
+Sean selected free hosting on 2026-10-24. `render.yaml` now uses `plan: free`,
+one service in Singapore, and no disk. It keeps automatic redeploys off and
+asks for the Gemini key as a secret, without storing a key in the repository.
+No Render service has been created yet; the dashboard is waiting for sign-in.
+This supersedes the earlier paid proposal.
+
+Free web services sleep after 15 minutes without inbound traffic. Waking can
+take about a minute. Their writable files are lost on sleep, restart or deploy.
+Sources: https://render.com/docs/free and https://render.com/docs/compute-plans
+
+Consequences for this demo:
+
+- Startup rebuilds the 22 statute chunks for free. It makes no embedding calls.
+- The free deployment has no saved vector cache. Gemini answers use BM25
+  keyword retrieval. English questions can retrieve fewer useful passages than
+  Korean keywords or visa codes. Semantic/hybrid search remains a local feature
+  until an index and sufficient runtime memory are provided.
+- Local API request counters reset when Render discards the filesystem. The
+  advertised daily allowance is per instance lifetime within a UTC day, not a
+  durable provider billing cap. Do not rely on it to cap a paid Gemini project.
+- Use a Gemini project on Google's Free tier for a zero-cost AI demo. Free
+  hosting does not make a billing-enabled Gemini key free. Do not enable paid
+  billing as part of this deployment. Provider quota failures return readable
+  errors. With no Gemini key, the app retains free search-only behavior.
+- A free service still has bandwidth and build-minute allowances. Review the
+  workspace's spend limit and avoid adding a payment method for this free demo.
+  Render can suspend a service when free allowances run out.
+
+Google billing information: https://ai.google.dev/gemini-api/docs/billing/
+
+The Blueprint sets `KIWI_LIGHTWEIGHT=true`. This keeps the real Kiwi Korean
+morphological model and base lexicon, but omits optional proper-name, typo and
+multiword dictionaries and uses one tokenizer worker. Local defaults remain
+unchanged. A local macOS measurement for the public search-only assistant was
+346.8 MiB peak with this profile. Linux memory use and request peaks can differ.
+The same 11-question BM25 evaluation produced hit@5 0.818, recall@5 0.636, MRR
+0.818. See `eval/free_baseline.json` for the actual report.
+
+The new container workflow applies a 512 MB memory cap with the lightweight
+profile. It has not been pushed or run yet. The previously linked Docker pass
+covers the earlier configuration, not this new free-hosting profile. Validate
+this Blueprint with Render's published JSON schema before creation.
+
+To deploy:
+
+1. Sign in to https://dashboard.render.com/.
+2. Sean commits and pushes the free configuration, or the reviewed settings
+   are entered directly through the dashboard.
+3. Create one Docker web service from the repository's `develop` branch,
+   select Free, and confirm that no persistent disk or paid resources are listed.
+4. Add the settings from `render.yaml`. Use only a confirmed Free-tier Gemini
+   project key; otherwise leave the key absent for search-only operation.
+5. Wait for Live. Verify `/api/health` reports 22 chunks, AI enabled when a key
+   is supplied, and only `bm25` available. Test English/Korean questions and
+   official source links, then add the actual public URL to README.
+6. Verify a restart rebuilds free chunks without document embedding calls.
+
+The paid-disk instructions earlier in this document remain an optional upgrade,
+not the selected deployment. No paid resources may be created under this request.

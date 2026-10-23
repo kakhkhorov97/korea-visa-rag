@@ -101,14 +101,14 @@ def main() -> None:
         os.environ["VISARAG_RAW_DIR"] = str(ROOT / "data/public_raw")
         os.environ["VISARAG_DATA_DIR"] = str(ROOT / "data/public_cache")
     from visarag.assistant import VisaAssistant
-    from visarag.config import GEMINI_EMBED_MODEL
+    from visarag.config import GEMINI_EMBED_MODEL, KIWI_LIGHTWEIGHT
     from visarag.index_cache import index_path
     questions = load_questions(Path(args.questions))
     assistant = VisaAssistant()
     coverage = dict(Counter(q.get("coverage", "unreviewed") for q in questions))
     print(f"Coverage: {coverage}. Partial questions remain in retrieval scores.")
     result = {"corpus": args.corpus, "chunks": len(assistant.chunks),
-              "embedding_model": GEMINI_EMBED_MODEL, "coverage": coverage,
+              "embedding_model": GEMINI_EMBED_MODEL, "kiwi_lightweight": KIWI_LIGHTWEIGHT, "coverage": coverage,
               "corpus_fingerprint": index_path(assistant.chunks, GEMINI_EMBED_MODEL, Path('.')).name,
               "retrieval": eval_retrieval(assistant, questions, args.k)}
     if args.answers:

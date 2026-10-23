@@ -37,3 +37,6 @@ GUIDE_CHUNK_OVERLAP = 100
 API_REQUESTS_PER_MINUTE = int(os.getenv("API_REQUESTS_PER_MINUTE", "20"))
 API_DAILY_AI_REQUESTS = int(os.getenv("API_DAILY_AI_REQUESTS", "100"))
 API_MAX_CONCURRENT_AI = int(os.getenv("API_MAX_CONCURRENT_AI", "2"))
+
+# Free hosting profile: keep the real Kiwi model, omit optional extra dictionaries.
+KIWI_LIGHTWEIGHT = os.getenv("KIWI_LIGHTWEIGHT", "false").strip().lower() in {"true", "1", "yes"}

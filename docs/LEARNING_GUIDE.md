@@ -206,3 +206,26 @@ The evaluation defaults to the public corpus. Every label has a source-based
 note, and partial coverage stays in retrieval scoring. Retrieving a relevant
 permission article does not prove the corpus contains all student-work rules.
 A retrieval hit and a legally complete answer are different measurements.
+
+
+`render.yaml` describes a proposed hosting service rather than provisioning it.
+It specifies the Docker build, health endpoint, persistent disk, and secret
+prompt. Keeping auto-deploys off lets Sean control when a pushed change goes
+live. The Blueprint passes Render's published JSON schema; that validation does
+not verify credentials, billing, disk permissions or a live service. The GitHub
+container smoke test has now passed, while public deployment remains pending.
+
+
+## Free hosting profile
+
+The selected Render Blueprint now uses the Free plan and no persistent disk.
+It enables `KIWI_LIGHTWEIGHT` to omit optional dictionaries while keeping the
+real Korean analyzer. The local default is unchanged. Real-library regression
+tests still check particle stripping and visa-code tokens.
+
+Free hosting loses generated data and usage counters on restart. Startup builds
+only free keyword chunks, so it cannot create embedding charges. With a Gemini
+key the free server writes answers from keyword retrieval; without a key it
+shows source passages. Use a Free-tier Gemini project if the whole demo must
+cost nothing. Google quota limits remain separate from the app's counters.
+The earlier paid-disk Blueprint description is superseded by this free profile.

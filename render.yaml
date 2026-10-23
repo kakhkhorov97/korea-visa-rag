@@ -1,0 +1,32 @@
+# Free public demo. No paid disk or compute.
+# Files and application usage counters reset when the free instance restarts.
+services:
+  - type: web
+    name: korea-visa-rag
+    runtime: docker
+    repo: https://github.com/kakhkhorov97/korea-visa-rag
+    branch: develop
+    region: singapore
+    plan: free
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: "off"
+    envVars:
+      - key: KIWI_LIGHTWEIGHT
+        value: "true"
+      - key: SEARCH_ONLY
+        value: "false"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_CHAT_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_EMBED_MODEL
+        value: gemini-embedding-001
+      - key: API_REQUESTS_PER_MINUTE
+        value: "20"
+      - key: API_DAILY_AI_REQUESTS
+        value: "100"
+      - key: API_MAX_CONCURRENT_AI
+        value: "1"

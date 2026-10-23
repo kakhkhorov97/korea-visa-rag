@@ -14,6 +14,8 @@ tokenizer would break them into "D", "-", "10".
 import re
 from functools import lru_cache
 
+from .config import KIWI_LIGHTWEIGHT
+
 VISA_CODE_RE = re.compile(r"(?<![A-Za-z])([A-Ha-h])\s*-\s*(\d{1,2})(?:\s*-\s*(\d{1,2}))?(?!\d)")
 
 # Kiwi part-of-speech tags we keep: nouns, verb/adjective stems, roots,
@@ -24,6 +26,11 @@ KEEP_TAGS = ("NNG", "NNP", "NNB", "NR", "VV", "VA", "XR", "SL", "SH", "SN")
 @lru_cache(maxsize=1)
 def _kiwi():
     from kiwipiepy import Kiwi
+    if KIWI_LIGHTWEIGHT:
+        # Extra proper-name/typo dictionaries are not needed for the statute demo.
+        # Keep the real morphological model and its base Korean dictionary.
+        return Kiwi(num_workers=1, load_default_dict=False,
+                    load_typo_dict=False, load_multi_dict=False)
     return Kiwi()
 
 

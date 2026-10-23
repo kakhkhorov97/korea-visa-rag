@@ -1,0 +1,27 @@
+{
+  "corpus": "public",
+  "chunks": 22,
+  "embedding_model": "gemini-embedding-001",
+  "kiwi_lightweight": true,
+  "coverage": {
+    "partial": 5,
+    "covered": 6,
+    "out_of_scope": 1
+  },
+  "corpus_fingerprint": "10d40f00ec3896607e3895d05e6d21aec6778d70ac2f8d02f212a45ab6ea8243",
+  "retrieval": {
+    "bm25": {
+      "hit@5": 0.818,
+      "recall@5": 0.636,
+      "MRR": 0.818,
+      "n": 11
+    }
+  },
+  "measured_at": "2026-10-24 Asia/Seoul",
+  "command": "KIWI_LIGHTWEIGHT=true SEARCH_ONLY=true python eval/run_eval.py",
+  "limitations": [
+    "Five partially covered questions remain in the retrieval scores.",
+    "One out-of-scope question is excluded.",
+    "Keyword retrieval only; no answer-accuracy measurement."
+  ]
+}

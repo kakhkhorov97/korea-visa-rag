@@ -82,6 +82,13 @@ Use `python eval/run_eval.py --k 10` to score the top 10 results. `--k` must be 
 | Vector | 1.000 | 0.939 | 0.848 |
 | Hybrid (RRF) | 1.000 | 0.909 | 0.939 |
 
+For the free Render profile, `KIWI_LIGHTWEIGHT=true` keeps real Kiwi morphology
+with optional dictionaries disabled. Its measured keyword-search scores match
+the BM25 row above; see [free-profile report](eval/free_baseline.json).
+The free host uses keyword retrieval, sleeps when idle, and discards generated
+files and usage counters on restart. Use a Free-tier Gemini project for AI
+answers without provider charges. See [free hosting details](docs/DEPLOYMENT.md#free-render-deployment).
+
 ## Quick start
 
 ```bash
@@ -138,8 +145,10 @@ answers use keyword retrieval until the preparation job finishes and the app
 restarts. See [deployment instructions](docs/DEPLOYMENT.md) for persistent
 storage, secret settings, and API usage limits.
 
-The image and new container CI workflow have not been run here because Docker
-is unavailable. A public hosting account and deployment URL are still needed.
+The pushed Docker image configuration passed its GitHub Actions smoke test;
+Docker remains unavailable locally. A Render Blueprint is prepared in
+`render.yaml`, using the Free plan without a paid disk. Sign-in and a public
+deployment URL are still needed. The new lightweight profile awaits its CI run.
 
 ### Telegram bot
 

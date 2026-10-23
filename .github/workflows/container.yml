@@ -18,9 +18,9 @@ jobs:
           docker run --rm --entrypoint python visa-demo -c "from pathlib import Path; assert not Path('/app/.env').exists(); assert not Path('/app/data/raw').exists(); assert not Path('/app/data/originals').exists(); assert not Path('/app/.git').exists()"
       - name: Start keyless and exercise the real API
         run: |
-          docker run -d --name visa-demo -p 8000:8000 -e SEARCH_ONLY=true visa-demo
+          docker run -d --name visa-demo --memory=512m --cpus=0.5 -p 8000:8000 -e SEARCH_ONLY=true -e KIWI_LIGHTWEIGHT=true visa-demo
           trap 'docker logs visa-demo; docker rm -f visa-demo' EXIT
-          for attempt in $(seq 1 30); do
+          for attempt in $(seq 1 60); do
             if curl --fail --silent http://localhost:8000/api/health > /tmp/health.json; then break; fi
             sleep 2
           done

@@ -190,3 +190,42 @@ def test_eval_rejects_labels_from_wrong_corpus():
     engine = SimpleNamespace(by_id={'current': object()})
     with pytest.raises(ValueError, match='missing chunks'):
         module['eval_retrieval'](engine, [{'relevant': ['old']}], 5)
+
+
+def test_render_blueprint_uses_free_compute_without_billable_storage():
+    import yaml
+    from visarag.config import ROOT
+    blueprint = yaml.safe_load((ROOT / 'render.yaml').read_text())
+    service, = blueprint['services']
+    assert (ROOT / service['dockerfilePath']).is_file()
+    assert service['healthCheckPath'] == '/api/health'
+    assert service['numInstances'] == 1
+    assert 'disk' not in service
+    assert service['plan'] == 'free'
+    env = {item['key']: item for item in service['envVars']}
+    assert env['KIWI_LIGHTWEIGHT']['value'] == 'true'
+    assert env['GEMINI_API_KEY'] == {'key': 'GEMINI_API_KEY', 'sync': False}
+    assert 'TELEGRAM_BOT_TOKEN' not in env
+    assert service['autoDeployTrigger'] == 'off'
+
+
+
+def test_lightweight_kiwi_keeps_korean_particles_and_visa_codes(monkeypatch):
+    from visarag import tokenizer
+    monkeypatch.setattr(tokenizer, "KIWI_LIGHTWEIGHT", True)
+    tokenizer._kiwi.cache_clear()
+    try:
+        kiwi = tokenizer._kiwi()
+        assert kiwi.num_workers == 1
+        tokens = tokenizer.tokenize("D-2 비자를 변경하려면 E-7-1 허가를 받아야 합니다.")
+        assert "비자" in tokens and "비자를" not in tokens
+        assert "D-2" in tokens and "E-7" in tokens and "E-7-1" in tokens
+        from visarag.assistant import VisaAssistant
+        from visarag.chunking import chunk_document
+        from visarag.documents import load_documents
+        from visarag.config import ROOT
+        chunks = [c for doc in load_documents(ROOT / "data/public_raw") for c in chunk_document(doc)]
+        engine = VisaAssistant(chunks=chunks, use_llm=False)
+        assert engine.retrieve("외국인등록 90일")[0].chunk_id == "act_031::0000"
+    finally:
+        tokenizer._kiwi.cache_clear()
