@@ -24,7 +24,7 @@ jobs:
             if curl --fail --silent http://localhost:8000/api/health > /tmp/health.json; then break; fi
             sleep 2
           done
-          python -c "import json; h=json.load(open('/tmp/health.json')); assert h['chunks'] == 22; assert h['llm'] is False; assert h['modes'] == ['bm25']"
+          python -c "import json; h=json.load(open('/tmp/health.json')); assert h['chunks'] == 39; assert h['llm'] is False; assert h['modes'] == ['bm25']"
           curl --fail --silent http://localhost:8000/ > /dev/null
           curl --fail --silent -H 'Content-Type: application/json' -d '{"question":"외국인등록 90일"}' http://localhost:8000/api/ask > /tmp/answer.json
           python -c "import json; a=json.load(open('/tmp/answer.json')); assert a['mode'] == 'search-only'; assert a['sources']; assert all(s['url'].startswith('https://www.law.go.kr/') for s in a['sources'])"

@@ -1,0 +1,13 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete E2 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 6f6fdcc37a6b3ee105733bcd0c01842a80cc55290589bb0c40f85b1b61fc9f97
+---
+법무부장관이 정하는 자격요건을 갖춘 외국인으로서 외국어
+15. 회화지도    전문학원, 초등학교 이상의 교육기관 및 부설어학연구소, 방
+    (E-2)   송사 및 기업체 부설 어학연수원, 그 밖에 이에 준하는 기관
+            또는 단체에서 외국어 회화지도에 종사하려는 사람

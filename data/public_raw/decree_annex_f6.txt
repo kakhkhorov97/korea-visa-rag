@@ -1,0 +1,17 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete F6 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 15661304ea48155d91282adf8656c5dbaa29051c645d405b45198d5a141df3cb
+---
+가. 국민의 배우자
+            나. 국민과 혼인관계(사실상의 혼인관계를 포함한다)에서 출
+               생한 자녀를 양육하고 있는 부 또는 모로서 법무부장관이
+27. 결혼이민       인정하는 사람
+    (F-6)   다. 국민인 배우자와 혼인한 상태로 국내에 체류하던 중 그
+               배우자의 사망이나 실종, 그 밖에 자신에게 책임이 없는
+               사유로 정상적인 혼인관계를 유지할 수 없는 사람으로서
+               법무부장관이 인정하는 사람

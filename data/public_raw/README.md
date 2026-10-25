@@ -2,8 +2,15 @@
 
 This directory is the only source-data directory copied into the public Docker
 image. It contains 17 selected articles of the Immigration Act and its
-Enforcement Decree, plus five selected statutory annex rows. Retrieved 2026-10-24.
+Enforcement Decree, plus 22 selected statutory annex rows (39 chunks total).
+The original sources were retrieved 2026-10-24; 17 additional category rows were
+retrieved 2026-10-26 from the same pinned official annex.
 Each file records its official URL, retrieval date and extracted-text SHA-256.
+
+Category definitions cover D-2, D-4, D-7, D-8, D-9, D-10; E-1 through E-9;
+F-1, F-2, F-3, F-4, F-6; and H-1. These are 21 broad categories, not every visa
+subtype. F-5 permanent residence, short-stay categories and H-2 are not covered.
+The D-10 stay-limit row is a separate annex excerpt.
 
 Articles were fetched with `python scripts/fetch_public_statutes.py` from the
 official public article viewer. No account or LAW_API_OC is needed. Refreshing

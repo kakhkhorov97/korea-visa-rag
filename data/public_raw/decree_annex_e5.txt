@@ -1,0 +1,14 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete E5 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 8e311fb0fd827f1fadb46adaf0c8986a95b1e2f98e929301f2986aae6213be26
+---
+대한민국 법률에 따라 자격이 인정된 외국의 변호사, 공인회
+  18. 전문직업 계사,  의사, 그 밖에 국가공인 자격이 있는 사람으로서 대한
+            민국 법률에 따라 할 수 있도록 되어 있는 법률, 회계, 의료
+      (E-5) 등의 전문업무에 종사하려는 사람[교수(E-1) 체류자격에 해
+            당하는 사람은 제외한다]

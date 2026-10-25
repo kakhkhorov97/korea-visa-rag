@@ -229,3 +229,39 @@ key the free server writes answers from keyword retrieval; without a key it
 shows source passages. Use a Free-tier Gemini project if the whole demo must
 cost nothing. Google quota limits remain separate from the app's counters.
 The earlier paid-disk Blueprint description is superseded by this free profile.
+
+## Cloud Run and persistent retrieval data
+
+Cloud Run does not keep local files when an instance stops. A local Chroma
+directory can therefore be a serving copy, but cannot be the durable index.
+`scripts/export_snapshot.py` reads the reviewed public corpus and its existing
+vectors into a JSON snapshot. It does not call Gemini. Private local documents
+cannot be selected through this export command.
+
+`snapshot.py` restores that snapshot into a fresh Chroma directory using the
+saved vectors. Storage holds the persistent copy. Each cloud revision pins an
+object generation and SHA-256 checksum, so replacing a bucket object cannot
+silently change the running revision's sources. The importer also compares the
+chunks to the public corpus in the image. A different corpus/model needs a new
+image and matching snapshot. Startup fails if verification fails.
+
+The usage ledger is different: it counts requests rather than storing retrieval
+data. It remains temporary on Cloud Run, so its daily limit resets on instance
+replacement. The proposed first deployment disables Gemini calls explicitly.
+Paid AI needs a separately reviewed durable usage store and provider controls.
+See [Google Cloud deployment](GOOGLE_CLOUD.md) for costs, identities, commands
+and rollback. The subsequently approved private deployment passed live API and
+two-revision index-restoration checks; details are in the
+[release record](CLOUD_RELEASE_2026-10-25.md). Public access was subsequently enabled;
+Gemini is now enabled using the existing Free-tier project. Cloud Run references
+`visa-gemini-key:1` in Secret Manager; the key is never included in the image or
+frontend. Switching `SEARCH_ONLY` off also makes the restored vector index
+available, which enables meaning and combined search in the existing UI.
+
+The expanded public corpus contains 21 visa-category definitions (39 chunks
+including the existing articles and D-10 stay-limit excerpt). Complete annex
+rows stay together, including F-2's continuation and F-3's exclusions. Category
+definitions do not establish every subtype's eligibility, paperwork or points
+threshold. The assistant must still abstain when those details are absent.
+`scripts/extract_statute_annexes.py` pins the official PDF hash and reviewed row
+boundaries; refreshing a changed PDF requires a new layout review.

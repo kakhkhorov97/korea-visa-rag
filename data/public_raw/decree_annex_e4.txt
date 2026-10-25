@@ -1,0 +1,12 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete E4 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: ebccc748cb2fd087678649ae5ac90038041024784a26ed00f3bf656548543470
+---
+17. 기술지도 자연과학   분야의 전문지식 또는 산업상 특수한 분야에 속하
+            는 기술을 제공하기 위하여 대한민국 내 공공기관ㆍ민간단체
+      (E-4) 로부터 초청을 받아 종사하려는 사람

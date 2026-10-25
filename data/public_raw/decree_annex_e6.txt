@@ -1,0 +1,12 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete E6 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 17409162d54cec1b18d3931ef3aa46b3e74a0004a5fc06e9d1d84197032c2586
+---
+19. 예술흥행 수익이   따르는 음악, 미술, 문학 등의 예술활동과 수익을 목
+            적으로 하는 연예, 연주, 연극, 운동경기, 광고ㆍ패션 모델,
+      (E-6) 그 밖에 이에 준하는 활동을 하려는 사람

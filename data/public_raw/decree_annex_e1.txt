@@ -1,0 +1,13 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete E1 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 80a28b2158482d20f635b2aef073ddb5d557e18ef53c210ea1a40237914af3e5
+---
+「고등교육법」 제14조제1항ㆍ제2항 또는 제17조에 따른 자
+ 14. 교수     격요건을 갖춘 외국인으로서 전문대학 이상의 교육기관이나
+  (E-1)     이에 준하는 기관에서 전문 분야의 교육 또는 연구ㆍ지도 활
+            동에 종사하려는 사람

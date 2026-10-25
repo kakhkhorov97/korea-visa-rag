@@ -1,0 +1,19 @@
+# Explicit upload allowlist. Never upload .env, local documents, indexes or Git.
+**
+!Dockerfile
+!.dockerignore
+!requirements.txt
+!cloudbuild.yaml
+!src/
+!src/visarag/
+!src/visarag/*.py
+!web/
+!web/*.html
+!web/*.css
+!web/*.js
+!scripts/
+!scripts/build_index.py
+!scripts/serve.py
+!data/
+!data/public_raw/
+!data/public_raw/*.txt

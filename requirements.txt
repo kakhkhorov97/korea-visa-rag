@@ -5,6 +5,7 @@ rank-bm25>=0.2.2
 kiwipiepy>=0.18        # Korean morphological analyzer (tokenizer for BM25)
 python-dotenv>=1.0
 requests>=2.31
+google-cloud-storage>=3.0,<4  # private Cloud Run snapshot downloads using service identity
 
 # Web
 fastapi>=0.110

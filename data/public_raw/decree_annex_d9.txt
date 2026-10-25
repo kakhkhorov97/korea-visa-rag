@@ -1,0 +1,16 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete D9 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: 5c8b73502b94a1c5e69f0952380d4d1b18889f7b3cc691942db15b445c444a77
+---
+대한민국에 회사를 설립하여 경영하거나 무역, 그 밖의 영리
+            사업을 위한 활동을 하려는 사람으로서 필수 전문인력에 해
+12. 무역경영    당하는 사람[수입기계 등의 설치, 보수, 조선 및 산업설비 제
+    (D-9)   작ㆍ감독 등을 위하여 대한민국 내의 공공기관ㆍ민간단체에
+            파견되어 근무하려는 사람을 포함하되, 국내에서 채용하는
+            사람과 기업투자(D-8) 체류자격에 해당하는 사람은 제외한
+            다]

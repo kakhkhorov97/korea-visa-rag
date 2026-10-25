@@ -1,0 +1,14 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete H1 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: bb96ca9ac6ef38c2fe39a18c80bc6731035ec2e4c0b3fe44639699b510d2cb49
+---
+대한민국과 “관광취업”에 관한 협정이나 양해각서 등을 체결
+28. 관광취업    한 국가의 국민으로서 협정 등의 내용에 따라 관광과 취업활
+    (H-1)   동을 하려는 사람(협정 등의 취지에 반하는 업종이나 국내법
+            에 따라 일정한 자격요건을 갖추어야 하는 직종에 취업하려
+            는 사람은 제외한다)

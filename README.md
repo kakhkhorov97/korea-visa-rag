@@ -1,13 +1,17 @@
 # 🛂 Korea Visa Assistant · 체류자격 도우미
 
 A citation-first RAG assistant, available as a **web app** and a **Telegram bot**, that answers
-questions about Korean student and job-seeker visas (D-2, D-4, D-10, E-7) in **English or Korean**,
+questions about Korean study, work, business, family and residence visas in **English or Korean**,
 using only official government sources.
 
 > 한국어 설명은 [아래](#한국어)에 있습니다.
 
-**Status:** 🚧 In development. Core pipeline, web app and tests are implemented; data collection,
-a first statute-corpus retrieval evaluation is complete; public deployment is pending.
+**Status:** Public portfolio demo in development:
+[open Korea Visa Assistant](https://korea-visa-rag-jwq77bpivq-uc.a.run.app/).
+The deployed release provides Gemini answers with official citations over
+39 statute chunks covering 21 visa categories. Keyword, meaning and combined
+search are enabled. The retrieval evaluation
+below uses the expanded corpus; the earlier 22-chunk baseline is retained.
 
 ![Running Korea Visa Assistant](docs/images/screenshot.png)
 *Local statute-only app with a real Gemini answer and official citations, captured 2026-10-24. This is not a public deployment.*
@@ -67,20 +71,22 @@ See [the source format](data/raw/README.md) when adding documents.
 
 ## Results
 
-Measured on 2026-10-24 with `python eval/run_eval.py`: 22 statute chunks,
+Measured on 2026-10-26 with `KIWI_LIGHTWEIGHT=true python eval/run_eval.py`: 39 statute chunks,
 11 labeled in-scope questions, and one excluded out-of-scope question. Five
 in-scope questions have partial source coverage and remain in the scores.
 These retrieval metrics do not measure legal answer accuracy. This small set
 has not been independently annotated. See [labels](eval/LABELING.md) and the
-[saved report](eval/public_baseline.json).
+[saved report](eval/public_expanded_baseline.json). The earlier 22-chunk report is
+retained in [the original baseline](eval/public_baseline.json). These labels
+predate the expansion; they do not evaluate answers for the 17 new categories.
 
 Use `python eval/run_eval.py --k 10` to score the top 10 results. `--k` must be a positive integer.
 
 | Retrieval | hit@5 | recall@5 | MRR |
 |---|---|---|---|
 | BM25 | 0.818 | 0.636 | 0.818 |
-| Vector | 1.000 | 0.939 | 0.848 |
-| Hybrid (RRF) | 1.000 | 0.909 | 0.939 |
+| Vector | 1.000 | 0.818 | 0.818 |
+| Hybrid (RRF) | 1.000 | 0.818 | 0.939 |
 
 For the free Render profile, `KIWI_LIGHTWEIGHT=true` keeps real Kiwi morphology
 with optional dictionaries disabled. Its measured keyword-search scores match
@@ -129,7 +135,8 @@ embedding providers or models; old vectors cannot be reused with a different emb
 
 ### Public demo package
 
-Docker uses only the 22 official statute chunks in `data/public_raw/`. The
+Docker uses only the 39 official statute chunks in `data/public_raw/`, covering
+21 broad visa categories. See the corpus README for the exact list and omissions. The
 HiKorea manual and local extracts are excluded, along with `.env` and local
 indexes. See [source scope and reuse basis](data/public_raw/README.md).
 
@@ -145,10 +152,19 @@ answers use keyword retrieval until the preparation job finishes and the app
 restarts. See [deployment instructions](docs/DEPLOYMENT.md) for persistent
 storage, secret settings, and API usage limits.
 
-The pushed Docker image configuration passed its GitHub Actions smoke test;
-Docker remains unavailable locally. A Render Blueprint is prepared in
-`render.yaml`, using the Free plan without a paid disk. Sign-in and a public
-deployment URL are still needed. The new lightweight profile awaits its CI run.
+The repository includes a Docker smoke test and an alternative Render Blueprint
+(`render.yaml`, Free plan without a paid disk, `KIWI_LIGHTWEIGHT=true`).
+
+The app is deployed publicly on Google Cloud Run with Gemini enabled. The
+production container build and live API checks passed. The current release
+restored all 39 saved vectors from private Cloud Storage without re-embedding;
+F-6, E-9 and H-1 source searches passed before publication.
+See [deployment and costs](docs/GOOGLE_CLOUD.md) and the
+[original release record](docs/CLOUD_RELEASE_2026-10-25.md) and
+[expanded release record](docs/EXPANDED_RELEASE_2026-10-26.md).
+Gemini uses a pinned Secret Manager version and the existing Free-tier API
+project. Live English/Korean citation checks and meaning search passed before
+activation. Provider quotas can temporarily limit answers; paid billing was not enabled.
 
 ### Telegram bot
 
@@ -216,7 +232,7 @@ tests/           unit + API tests
 외국인 유학생·구직자 비자(D-2, D-4, D-10, E-7)에 대한 질문에 **공식 정부 자료만을 근거로** 답하는 RAG
 기반 웹 서비스입니다. 모든 답변에 출처(법령 조문, 링크)를 표시하며, 자료에 없는 내용은 모른다고 답합니다.
 
-**현재 상태:** 개발 중. 핵심 파이프라인, 웹 앱, 테스트는 구현되었으며 데이터 수집, 평가, 배포를 진행하고 있습니다.
+**현재 상태:** 배포 준비 완료. 핵심 파이프라인, 웹 앱, 텔레그램 봇, 테스트, 첫 검색 평가(라벨링 질문 11개, 하이브리드 hit@5 1.000, MRR 0.939)를 마쳤습니다. Docker 이미지는 CI 스모크 테스트를 통과했고 Render Blueprint가 준비되어 있으며, 공개 URL은 아직 없습니다.
 
 **주요 기술적 특징**
 

@@ -1,0 +1,14 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete F3 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: a1c61c6cd3764ccafd85d7d70dd72fb854cf213743d90736f6cbf5af015d01a7
+---
+문화예술(D-1), 유학(D-2), 일반연수(D-4)부터 특정활동
+ 25. 동반     (E-7)까지, 거주(F-2), 재외동포(F-4) 및 방문취업(H-2)의 체
+  (F-3)     류자격에 해당하는 사람의 배우자 및 미성년 자녀로서 배우
+            자가 없는 사람. 다만, 거주(F-2)의 체류자격 중 타목의 체류
+            자격에 해당하는 사람은 제외한다.

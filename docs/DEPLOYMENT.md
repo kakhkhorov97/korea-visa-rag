@@ -1,5 +1,11 @@
 # Public demo deployment
 
+Google Cloud deployment is documented separately in
+[GOOGLE_CLOUD.md](GOOGLE_CLOUD.md). A private search-only Cloud Run deployment
+has passed its live checks; see the [release record](CLOUD_RELEASE_2026-10-25.md).
+Public access remains pending approval. The Render configuration below remains
+an alternative and has not been provisioned by this work.
+
 The public image uses only `data/public_raw/`, currently 22 statute chunks.
 It does not copy `.env`, `.git`, the local HiKorea extracts, the original HWP,
 local indexes, or evaluation output. Store secrets in your host's environment

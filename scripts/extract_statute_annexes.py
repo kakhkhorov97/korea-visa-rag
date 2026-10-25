@@ -12,6 +12,28 @@ import requests
 
 DEST = Path(__file__).resolve().parents[1] / 'data/public_raw'
 
+# Half-open line ranges in the pinned pdftotext -layout output. Complete rows,
+# including continuations across pages 2–7, were checked against rendered pages.
+DECREE_ROWS = {
+    'd2': (15, 17), 'd4': (19, 24), 'd7': (34, 50), 'd8': (50, 67),
+    'd9': (67, 74), 'd10': (74, 81), 'e1': (81, 85), 'e2': (85, 89),
+    'e3': (89, 94), 'e4': (94, 97), 'e5': (97, 102), 'e6': (102, 105),
+    'e7': (105, 107), 'e8': (107, 111), 'e9': (111, 114),
+    'f1': (125, 153), 'f2': (153, 194), 'f3': (194, 199),
+    'f4': (199, 201), 'f6': (201, 209), 'h1': (209, 214),
+}
+
+
+def decree_rows(text):
+    """Keep each legal category's exceptions attached to its definition."""
+    lines = text.split('\n')
+    for code, (start, end) in DECREE_ROWS.items():
+        excerpt = '\n'.join(lines[start:end]).replace('\f', '').strip()
+        label = f'{code[0].upper()}-{code[1:]}'
+        if f'({label})' not in excerpt:
+            raise ValueError(f'Missing category {label}; review the PDF layout.')
+        yield code, excerpt
+
 
 def download_text(file_id, expected_sha):
     url = f'https://www.law.go.kr/LSW/flDownload.do?flSeq={file_id}'
@@ -27,10 +49,10 @@ def download_text(file_id, expected_sha):
         return txt.read_text(), url
 
 
-def save(name, title, text, url, pdf_sha, excerpt):
+def save(name, title, text, url, pdf_sha, excerpt, retrieved='2026-10-24'):
     text = text.strip()
     header = (f'---\ntitle: {title}\nsource_url: {url}\ndoc_type: law\n'
-              f'retrieved: 2026-10-24\nexcerpt: {excerpt}\npdf_sha256: {pdf_sha}\n'
+              f'retrieved: {retrieved}\nexcerpt: {excerpt}\npdf_sha256: {pdf_sha}\n'
               f'text_sha256: {hashlib.sha256(text.encode()).hexdigest()}\n---\n')
     (DEST / f'{name}.txt').write_text(header + text + '\n', encoding='utf-8')
 
@@ -39,13 +61,10 @@ def main():
     decree_sha = 'c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b'
     rules_sha = '788d80b53fdbc8c85dfc830f73c740223848e8a7bd4d0bad3da2681cedd98abc'
     text, url = download_text('169633213', decree_sha)
-    lines = text.split('\n')
-    # Half-open line ranges in pdftotext -layout output, checked against pages 1,3,4.
-    for code, start, end in [('d2', 15, 17), ('d4', 19, 24), ('d10', 74, 81), ('e7', 105, 107)]:
-        excerpt = '\n'.join(lines[start:end])
-        assert {'d2': '(D-2)', 'd4': '(D-4)', 'd10': '(D-10)', 'e7': '(E-7)'}[code] in excerpt
+    for code, excerpt in decree_rows(text):
         save(f'decree_annex_{code}', '출입국관리법 시행령 별표 1의2', excerpt, url,
-             decree_sha, f'complete {code.upper()} row; PDF revised 2026-09-15')
+             decree_sha, f'complete {code.upper()} row; PDF revised 2026-09-15',
+             retrieved='2026-10-24' if code in {'d2', 'd4', 'd10', 'e7'} else '2026-10-26')
     text, url = download_text('170812861', rules_sha)
     lines = text.split('\n')
     row = next(line[line.index('구직(D-10)'):] for line in lines if '구직(D-10)' in line)

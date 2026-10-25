@@ -1,0 +1,11 @@
+---
+title: 출입국관리법 시행령 별표 1의2
+source_url: https://www.law.go.kr/LSW/flDownload.do?flSeq=169633213
+doc_type: law
+retrieved: 2026-10-26
+excerpt: complete F4 row; PDF revised 2026-09-15
+pdf_sha256: c81be9d3cd10e657ddc99b70f5a4a15d0da21694510d7a741f3e704118ea2b5b
+text_sha256: f849d3c6463be5085d70997886deb7960f05b00ac0483684eb73800137e5c1e4
+---
+26. 재외동포    「재외동포의 출입국과 법적 지위에 관한 법률」 제2조제2호
+    (F-4)   에 해당하는 사람

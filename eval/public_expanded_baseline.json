@@ -1,0 +1,32 @@
+{
+  "corpus": "public",
+  "chunks": 39,
+  "embedding_model": "gemini-embedding-001",
+  "kiwi_lightweight": true,
+  "coverage": {
+    "partial": 5,
+    "covered": 6,
+    "out_of_scope": 1
+  },
+  "corpus_fingerprint": "ecb9311a941ae32c0391349d57f40282d857bc760522b9d41e42fb945a8985e3",
+  "retrieval": {
+    "bm25": {
+      "hit@5": 0.818,
+      "recall@5": 0.636,
+      "MRR": 0.818,
+      "n": 11
+    },
+    "vector": {
+      "hit@5": 1.0,
+      "recall@5": 0.818,
+      "MRR": 0.818,
+      "n": 11
+    },
+    "hybrid": {
+      "hit@5": 1.0,
+      "recall@5": 0.818,
+      "MRR": 0.939,
+      "n": 11
+    }
+  }
+}
