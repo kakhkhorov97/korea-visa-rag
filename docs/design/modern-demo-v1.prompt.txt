@@ -1,0 +1,24 @@
+Use case: ui-mockup.
+Create one exceptionally polished, realistic desktop web app design mockup for the existing "Korea Visa Assistant", a bilingual English/Korean citation-first RAG application. This is a DESIGN CONCEPT, not a screenshot of a deployed redesign. Render a single straight-on application viewport, approximately 1600 by 1050, no laptop hardware, no floating phone, no perspective.
+
+Art direction: a contemporary Seoul architecture gallery's digital workspace, translated only into palette, type, density and the numbered-source signature. A functional app, never a poster or literal gallery. Architectural precision, quiet confidence, warmth, excellent everyday usability. Deep midnight ink-blue structural left sidebar, warm pale limestone canvas, white answer surface, restrained pale sage source-inspection panel, one vivid cobalt action button. Strong contrasts and truly readable dark text. No purple gradients, glassmorphism, robot mascots, sparkle motifs, excessive rounded pill cards, fake analytics, oversized marketing hero or ornamental Korean roof motifs. Modern humanist sans UI typography, refined editorial serif only for one modest welcome heading if it helps. Crisp 8px spacing rhythm, generous but purposeful margins, fine rules, restrained 12px corners. Avoid empty acres of whitespace. Looks like a beautifully crafted working product.
+
+Layout:
+Left sidebar about 224px wide, full height deep ink blue. Top compact original abstract document/bookmark line icon and exact name "Korea Visa Assistant"; secondary "체류자격 도우미". Navigation "Ask a question" selected. Below subtle label "SEARCH METHOD" and three standard radio options, clearly labelled "Combined", "Keyword", "Meaning". Combined selected in a blue-grey inset row. Small helper "Choose how sources are found." Lower down "TRY A TOPIC" with simple small text links "Study", "Work", "Family". Bottom understated owner line "Built by Sean Kakhkhorov". No login, paid upgrades, fake histories or invented features.
+
+Main top bar across remaining area: left breadcrumb "Visa questions", right small sage dot with text "AI answers on" and quiet "English / 한국어" informational label. Fine divider.
+Working conversation region main central column with a companion evidence panel on right, approximately 58% and 26% widths after sidebar. Top small eyebrow "OFFICIAL SOURCES. CLEARER ANSWERS." then a compact heading "A little clarity for your next step." Do not let heading dominate the functional conversation.
+
+Show one actual example state:
+Small user bubble: "What is the E-9 visa category?"
+A spacious white assistant answer area with subtle document icon and heading "E-9 · Non-professional employment".
+Use this EXACT sample body, broken into readable short paragraphs:
+"The E-9 category covers people who meet Korea's domestic employment requirements under the Act on the Employment of Foreign Workers. [1]"
+"Professional occupations requiring specific qualifications or experience are excluded. [1]"
+Place [1] as clean small blue inline citation anchors, not superscript clutter.
+Below answer, small divider and a plain link row "1  Immigration Control Act Enforcement Decree · Annex 1-2" with an external link icon. Small plain action "View original passage". No invented certainty percentages or AI accuracy badges. Small muted note "Generated from the passages shown. Confirm requirements with 1345 or HiKorea."
+
+Right evidence area: pale sage ground, heading "Sources behind this answer", small label "1 cited source". One white source block with number "01", exact Korean source title "출입국관리법 시행령", smaller "별표 1의2 · E-9". A short Korean original passage set in readable Korean typography: "비전문취업 (E-9)" and "국내 취업 요건을 갖춘 사람". This is a preview, not a fabricated full legal document. Link "Open official source ↗", small domain "law.go.kr". Lower in this panel a thin rule then subtle info "About this demo" and text "Selected official Korean visa sources. Coverage is limited." No government seal or suggestion of government affiliation.
+
+Bottom main-area anchored question composer: one large white field with subtle border and visible accessible outline, placeholder "Ask about a Korean visa… / 비자 질문을 입력하세요", cobalt square rounded send-arrow button. Underneath small footer "General information, not legal advice."
+Citations and the evidence panel must be visible in the same viewport as the composer. Render all UI labels as legibly and accurately as possible. Include a tiny understated "Design concept" label at the lower outer edge. The result should be a considered, modern production-app visual, clean enough to implement in plain HTML/CSS, with real hierarchy and distinctive restraint.

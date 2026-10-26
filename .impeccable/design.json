@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T07:27:30.609912+00:00",
+  "title": "Design System: Korea Visa Assistant",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0458 260.46)",
+          "oklch(26% 0.0458 260.46)",
+          "oklch(37% 0.0458 260.46)",
+          "oklch(49% 0.0458 260.46)",
+          "oklch(60% 0.0458 260.46)",
+          "oklch(72% 0.0458 260.46)",
+          "oklch(84% 0.0458 260.46)",
+          "oklch(95% 0.0458 260.46)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0248 252.66)",
+          "oklch(26% 0.0248 252.66)",
+          "oklch(37% 0.0248 252.66)",
+          "oklch(49% 0.0248 252.66)",
+          "oklch(60% 0.0248 252.66)",
+          "oklch(72% 0.0248 252.66)",
+          "oklch(84% 0.0248 252.66)",
+          "oklch(95% 0.0248 252.66)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "tonalRamp": [
+          "oklch(15% 0.0051 228.82)",
+          "oklch(26% 0.0051 228.82)",
+          "oklch(37% 0.0051 228.82)",
+          "oklch(49% 0.0051 228.82)",
+          "oklch(60% 0.0051 228.82)",
+          "oklch(72% 0.0051 228.82)",
+          "oklch(84% 0.0051 228.82)",
+          "oklch(95% 0.0051 228.82)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "tonalRamp": [
+          "oklch(15% 0.0040 106.47)",
+          "oklch(26% 0.0040 106.47)",
+          "oklch(37% 0.0040 106.47)",
+          "oklch(49% 0.0040 106.47)",
+          "oklch(60% 0.0040 106.47)",
+          "oklch(72% 0.0040 106.47)",
+          "oklch(84% 0.0040 106.47)",
+          "oklch(95% 0.0040 106.47)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(37% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(60% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Rail",
+        "tonalRamp": [
+          "oklch(15% 0.0484 249.04)",
+          "oklch(26% 0.0484 249.04)",
+          "oklch(37% 0.0484 249.04)",
+          "oklch(49% 0.0484 249.04)",
+          "oklch(60% 0.0484 249.04)",
+          "oklch(72% 0.0484 249.04)",
+          "oklch(84% 0.0484 249.04)",
+          "oklch(95% 0.0484 249.04)"
+        ]
+      },
+      "rail-text": {
+        "role": "neutral",
+        "displayName": "Rail Text",
+        "tonalRamp": [
+          "oklch(15% 0.0074 260.73)",
+          "oklch(26% 0.0074 260.73)",
+          "oklch(37% 0.0074 260.73)",
+          "oklch(49% 0.0074 260.73)",
+          "oklch(60% 0.0074 260.73)",
+          "oklch(72% 0.0074 260.73)",
+          "oklch(84% 0.0074 260.73)",
+          "oklch(95% 0.0074 260.73)"
+        ]
+      },
+      "rail-muted": {
+        "role": "neutral",
+        "displayName": "Rail Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0309 251.32)",
+          "oklch(26% 0.0309 251.32)",
+          "oklch(37% 0.0309 251.32)",
+          "oklch(49% 0.0309 251.32)",
+          "oklch(60% 0.0309 251.32)",
+          "oklch(72% 0.0309 251.32)",
+          "oklch(84% 0.0309 251.32)",
+          "oklch(95% 0.0309 251.32)"
+        ]
+      },
+      "rail-selected": {
+        "role": "neutral",
+        "displayName": "Rail Selected",
+        "tonalRamp": [
+          "oklch(15% 0.0769 253.72)",
+          "oklch(26% 0.0769 253.72)",
+          "oklch(37% 0.0769 253.72)",
+          "oklch(49% 0.0769 253.72)",
+          "oklch(60% 0.0769 253.72)",
+          "oklch(72% 0.0769 253.72)",
+          "oklch(84% 0.0769 253.72)",
+          "oklch(95% 0.0769 253.72)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15% 0.2160 261.09)",
+          "oklch(26% 0.2160 261.09)",
+          "oklch(37% 0.2160 261.09)",
+          "oklch(49% 0.2160 261.09)",
+          "oklch(60% 0.2160 261.09)",
+          "oklch(72% 0.2160 261.09)",
+          "oklch(84% 0.2160 261.09)",
+          "oklch(95% 0.2160 261.09)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Accent Hover",
+        "tonalRamp": [
+          "oklch(15% 0.1737 260.75)",
+          "oklch(26% 0.1737 260.75)",
+          "oklch(37% 0.1737 260.75)",
+          "oklch(49% 0.1737 260.75)",
+          "oklch(60% 0.1737 260.75)",
+          "oklch(72% 0.1737 260.75)",
+          "oklch(84% 0.1737 260.75)",
+          "oklch(95% 0.1737 260.75)"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Accent Soft",
+        "tonalRamp": [
+          "oklch(15% 0.0195 260.17)",
+          "oklch(26% 0.0195 260.17)",
+          "oklch(37% 0.0195 260.17)",
+          "oklch(49% 0.0195 260.17)",
+          "oklch(60% 0.0195 260.17)",
+          "oklch(72% 0.0195 260.17)",
+          "oklch(84% 0.0195 260.17)",
+          "oklch(95% 0.0195 260.17)"
+        ]
+      },
+      "sage": {
+        "role": "secondary",
+        "displayName": "Sage",
+        "tonalRamp": [
+          "oklch(15% 0.0135 134.90)",
+          "oklch(26% 0.0135 134.90)",
+          "oklch(37% 0.0135 134.90)",
+          "oklch(49% 0.0135 134.90)",
+          "oklch(60% 0.0135 134.90)",
+          "oklch(72% 0.0135 134.90)",
+          "oklch(84% 0.0135 134.90)",
+          "oklch(95% 0.0135 134.90)"
+        ]
+      },
+      "sage-ink": {
+        "role": "secondary",
+        "displayName": "Sage Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0382 155.62)",
+          "oklch(26% 0.0382 155.62)",
+          "oklch(37% 0.0382 155.62)",
+          "oklch(49% 0.0382 155.62)",
+          "oklch(60% 0.0382 155.62)",
+          "oklch(72% 0.0382 155.62)",
+          "oklch(84% 0.0382 155.62)",
+          "oklch(95% 0.0382 155.62)"
+        ]
+      },
+      "ok": {
+        "role": "secondary",
+        "displayName": "Ok",
+        "tonalRamp": [
+          "oklch(15% 0.1152 149.89)",
+          "oklch(26% 0.1152 149.89)",
+          "oklch(37% 0.1152 149.89)",
+          "oklch(49% 0.1152 149.89)",
+          "oklch(60% 0.1152 149.89)",
+          "oklch(72% 0.1152 149.89)",
+          "oklch(84% 0.1152 149.89)",
+          "oklch(95% 0.1152 149.89)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Introduction heading."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Evidence heading."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Answer heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "English and Korean interface text."
+      },
+      "answer": {
+        "displayName": "Answer",
+        "purpose": "Generated answer reading text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Status and supporting metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "mobile-drawer",
+        "value": "10px 20px 40px #12283d33",
+        "purpose": "Separates the open settings drawer from mobile content."
+      }
+    ],
+    "motion": [
+      {
+        "name": "interactive-colors",
+        "value": "background-color 160ms ease-out, color 160ms ease-out",
+        "purpose": "Button, link and disclosure color transitions."
+      },
+      {
+        "name": "searching",
+        "value": "900ms linear infinite",
+        "purpose": "Loading ring rotation; disabled under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "1800px"
+      },
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "mobile",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Send question",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary composer action.",
+      "html": "<button class=\"ds-send\" aria-label=\"Send question\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" aria-hidden=\"true\"><path d=\"m4 4 17 8-17 8 3-8zM7 12h14\"/></svg></button>",
+      "css": ".ds-send{width:48px;height:48px;border:0;border-radius:8px;display:grid;place-items:center;background:var(--accent,#0759df);color:var(--surface,#fff);cursor:pointer;transition:background-color 160ms ease-out}.ds-send:hover{background:var(--accent-hover,#0645ab)}.ds-send:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}.ds-send:disabled{opacity:.55;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-send{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Topic shortcut",
+      "kind": "button",
+      "refersTo": "button-topic",
+      "description": "Quiet full-width navigation action.",
+      "html": "<button class=\"ds-topic\">Study <svg width=\"16\" height=\"16\" viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m8 5 5 5-5 5\"/></svg></button>",
+      "css": ".ds-topic{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);display:flex;justify-content:space-between;align-items:center;width:100%;min-height:46px;padding:12px 8px;border:0;border-radius:6px;color:var(--rail-text,#f4f7fc);background:var(--rail,#12283d);cursor:pointer;transition:background-color 160ms ease-out}.ds-topic:hover{background:#243e58}.ds-topic:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-topic{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Question navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Active entry in the settings rail.",
+      "html": "<nav class=\"ds-navigation\" aria-label=\"Question navigation\"><button class=\"ds-question\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M4 4h16v13H9l-5 4zM8 8h8M8 12h5\"/></svg>Ask a question</button></nav>",
+      "css": ".ds-question{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);display:flex;align-items:center;gap:12px;min-height:52px;padding:14px;border:0;border-radius:8px;background:var(--rail-selected,#284970);color:#fff;font-weight:600;cursor:pointer;transition:background-color 160ms ease-out}.ds-question:hover{background:#365c88}.ds-question:focus-visible{outline:3px solid #a3c8ff;outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-navigation,.ds-question{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Search method",
+      "kind": "input",
+      "refersTo": "mode-selected",
+      "description": "Radio row with a secondary explanation.",
+      "html": "<div class=\"ds-methods\"><label class=\"ds-mode\"><input type=\"radio\" name=\"ds-mode\" checked><span>Combined<small>Keywords and meaning</small></span></label><label class=\"ds-mode\"><input type=\"radio\" name=\"ds-mode\"><span>Keyword<small>Words and visa codes</small></span></label></div>",
+      "css": ".ds-methods{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);background:var(--rail,#12283d);color:var(--rail-text,#f4f7fc);padding:12px}.ds-mode{display:flex;align-items:flex-start;gap:12px;min-height:52px;padding:10px 12px;border-radius:7px;cursor:pointer}.ds-mode:has(input:checked){background:var(--rail-selected,#284970)}.ds-mode small{display:block;color:var(--rail-muted,#b5c5d7);font-size:11px;margin-top:3px}.ds-mode span{line-height:1.4}.ds-mode input{width:17px;height:17px;margin:5px 0 0;accent-color:#8eb9ff}.ds-mode:has(input:focus-visible){outline:2px solid #a3c8ff;outline-offset:2px}.ds-mode:has(input:disabled){opacity:.65;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-methods,.ds-mode,.ds-mode{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Citation",
+      "kind": "chip",
+      "refersTo": "citation",
+      "description": "Inline source number that opens evidence.",
+      "html": "<button class=\"ds-cite\" aria-label=\"View source 1\">[1]</button>",
+      "css": ".ds-cite{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);background:var(--accent-soft,#e8f0fd);color:var(--accent,#0759df);border:0;border-radius:3px;padding:2px 5px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;transition:background-color 160ms ease-out}.ds-cite:hover{background:#d4e4fc}.ds-cite:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-cite{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Answer card",
+      "kind": "card",
+      "refersTo": "answer-card",
+      "description": "White reading card with answer and source references.",
+      "html": "<article class=\"ds-answer-card\"><h2>Answer from your sources</h2><div class=\"ds-answer\"><p>Your answer appears here with numbered citations.</p></div><div class=\"ds-answer-links\"><a href=\"https://www.law.go.kr/\">1 Official source ↗</a></div><small>Combined search · 1 passage</small></article>",
+      "css": ".ds-answer-card{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);padding:24px;background:var(--surface,#fff);color:var(--ink,#152238);border:1px solid var(--line,#dfe3e5);border-radius:12px}.ds-answer-card h2{font-size:18px;font-weight:600;line-height:1.6;margin:0 0 20px}.ds-answer{font-size:18px;line-height:1.8;max-width:72ch;overflow-wrap:anywhere}.ds-answer p{margin:0}.ds-answer-links{margin-top:22px;padding-top:16px;border-top:1px solid var(--line,#dfe3e5);font-size:12px}.ds-answer-card a{color:var(--accent,#0759df);text-underline-offset:4px}.ds-answer-card a:hover{color:var(--accent-hover,#0645ab)}.ds-answer-card a:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}.ds-answer-card small{display:block;font-size:11px;color:var(--muted,#5a6572);margin-top:16px}@media(max-width:1100px){.ds-answer-card{padding:20px}}@media(max-width:900px){.ds-answer{font-size:14px}}@media(prefers-reduced-motion:reduce){.ds-answer-card,.ds-answer,.ds-answer-links{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Source disclosure",
+      "kind": "card",
+      "refersTo": "source-card",
+      "description": "Expandable official passage in the evidence area.",
+      "html": "<details class=\"ds-source\"><summary><span class=\"ds-number\">1</span><span class=\"ds-source-title\">Official source<span class=\"ds-cited\">Cited in this answer</span></span></summary><pre class=\"ds-passage\">Original source text appears here.</pre><a class=\"ds-source-link\" href=\"https://www.law.go.kr/\">Open official source ↗</a></details>",
+      "css": ".ds-source{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);background:var(--surface,#fff);color:var(--ink,#152238);padding:16px;border-radius:9px}.ds-source summary{display:flex;align-items:flex-start;gap:12px;min-height:42px;list-style:none;cursor:pointer}.ds-source summary::-webkit-details-marker{display:none}.ds-source summary::after{content:\"+\";font-size:20px;margin-left:auto;color:#54675a;line-height:1.2}.ds-source[open] summary::after{content:\"−\"}.ds-source summary:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}.ds-number{background:#eef1f3;padding:5px 8px;border-radius:6px;font-size:12px;font-variant-numeric:tabular-nums}.ds-source-title{font-size:14px;font-weight:500;line-height:1.6}.ds-cited{display:block;color:#356047;font-size:11px;font-weight:400;margin-top:3px}.ds-passage{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);font-size:13px;line-height:1.8;background:#f1f5f0;color:#384c40;padding:14px;border-radius:6px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;margin:14px 0}.ds-source-link{display:inline-block;color:var(--accent,#0759df);font-size:12px;min-height:36px;padding:7px 0;text-underline-offset:4px}.ds-source-link:hover{color:var(--accent-hover,#0645ab)}.ds-source-link:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-source,.ds-number,.ds-source-title,.ds-cited,.ds-passage,.ds-source-link{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Question composer",
+      "kind": "input",
+      "refersTo": "composer",
+      "description": "Growing question field with an adjacent send action.",
+      "html": "<div class=\"ds-composer\"><textarea rows=\"1\" aria-label=\"Your visa question\" placeholder=\"Ask about a Korean visa… / 비자 질문을 입력하세요\"></textarea><button class=\"ds-composer-send\" aria-label=\"Send question\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" aria-hidden=\"true\"><path d=\"m4 4 17 8-17 8 3-8zM7 12h14\"/></svg></button></div>",
+      "css": ".ds-composer{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);display:flex;gap:12px;align-items:flex-end;padding:12px;border:1px solid #ccd4db;background:var(--surface,#fff);border-radius:12px}.ds-composer:focus-within{border-color:var(--accent,#0759df);outline:2px solid #cbdfff;outline-offset:1px}.ds-composer textarea{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);flex:1;min-width:0;border:0;resize:none;min-height:48px;max-height:112px;padding:12px;background:transparent;color:var(--ink,#152238);font-size:16px;line-height:24px;caret-color:var(--accent,#0759df)}.ds-composer textarea:focus{outline:none}.ds-composer textarea::placeholder{color:#626e7c;opacity:1}.ds-composer-send{width:48px;height:48px;flex:none;display:grid;place-items:center;border:0;border-radius:8px;background:var(--accent,#0759df);color:#fff;cursor:pointer;transition:background-color 160ms ease-out}.ds-composer-send:hover{background:var(--accent-hover,#0645ab)}.ds-composer-send:focus-visible{outline:3px solid var(--accent,#0759df);outline-offset:4px}@media(max-width:900px){.ds-composer{padding:8px;gap:4px}.ds-composer textarea{padding:10px 8px}}@media(prefers-reduced-motion:reduce){.ds-composer,.ds-composer-send{transition:none!important;animation:none!important}}"
+    },
+    {
+      "name": "Service status",
+      "kind": "custom",
+      "refersTo": "status",
+      "description": "Availability indicator with readable text.",
+      "html": "<span class=\"ds-status\" role=\"status\">AI answers on</span>",
+      "css": ".ds-status{font-family:var(--font,'IBM Plex Sans KR',system-ui,sans-serif);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;font-size:12px;line-height:1.6;color:var(--muted,#5a6572)}.ds-status::before{content:\"\";width:8px;height:8px;border-radius:50%;background:var(--ok,#24733c)}@media(prefers-reduced-motion:reduce){.ds-status{transition:none!important;animation:none!important}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The bilingual evidence workspace",
+    "overview": "The approved workspace uses an ink-blue navigation rail, warm stone ground, white answer cards and a sage evidence panel. Blue identifies actions and citations. Original passages remain visually distinct from generated answers.\n\nHumanist sans-serif text supports English and Korean reading. Modest serif headings mark the question workspace and its evidence area. Borders and background changes separate content without floating cards.",
+    "keyCharacteristics": [
+      "Ink-blue navigation and blue actions.",
+      "White answers beside sage evidence.",
+      "Serif headings with bilingual sans-serif reading text."
+    ],
+    "rules": [
+      {
+        "name": "The Evidence Separation Rule",
+        "body": "Use the sage panel for original sources and white cards for answers.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do use blue for actions, citations and focus indicators.",
+      "Do keep original passages visually separate from answer prose.",
+      "Do preserve visible keyboard focus and reduced-motion behavior.",
+      "Do stack evidence after the conversation on small screens."
+    ],
+    "donts": [
+      "Don't apply shadows to ordinary answer or source cards.",
+      "Don't replace the reading font with the display serif.",
+      "Don't use status color without its accompanying text."
+    ]
+  }
+}

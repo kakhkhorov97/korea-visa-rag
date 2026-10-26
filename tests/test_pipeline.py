@@ -381,7 +381,7 @@ def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypa
     gemini_models.embed_content.side_effect = fake_embed_content
     gemini_models.generate_content.return_value = types.GenerateContentResponse(
         candidates=[types.Candidate(content=types.Content(
-            role="model", parts=[types.Part.from_text(text="Test answer [1].")]))],
+            role="model", parts=[types.Part.from_text(text="테스트 답변 [1].")]))],
     )
     monkeypatch.setattr(assistant, "INDEX_DIR", tmp_path)
     monkeypatch.setattr(assistant, "HAS_GEMINI", True)
@@ -396,7 +396,9 @@ def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypa
     assert gemini_models.embed_content.call_args.kwargs["config"].task_type == "RETRIEVAL_QUERY"
     request = gemini_models.generate_content.call_args.kwargs
     assert chunks[3].text in request["contents"][0].parts[0].text
-    assert request["config"].system_instruction == assistant.SYSTEM_PROMPT
+    assert request["config"].system_instruction == (
+        assistant.SYSTEM_PROMPT + "\n\n" + assistant.language_instruction("Korean")
+    )
 
 
 def test_missing_gemini_key_keeps_search_only(chunks, monkeypatch):
@@ -436,3 +438,68 @@ def test_imported_guides_have_official_source_metadata():
         assert date.fromisoformat(doc.retrieved)
         assert len(doc.extra["source_sha256"]) == 64
         assert "KOGL Type 4" in doc.extra["license"]
+
+
+@pytest.mark.parametrize("question, expected", [
+    ("What is the E-9 visa category?", "English"),
+    ("Can I extend my D-10 visa?", "English"),
+    ("What does 체류자격 mean?", "English"),
+    ("E-9 비전문취업은 무엇인가요?", "Korean"),
+    ("D-10 체류기간", "Korean"),
+    ("E-9 visa가 뭐예요?", "Korean"),
+    ("D-10", "English"),
+])
+def test_response_language_uses_question_without_visa_codes(question, expected):
+    from visarag.assistant import response_language
+    assert response_language(question) == expected
+
+
+@pytest.mark.parametrize("text, language, expected", [
+    ("The category is Non-professional Employment (비전문취업) [1].", "English", True),
+    ("This is the Korean term 체류자격 [1].", "English", True),
+    ("비전문취업 자격으로 취업하는 사람입니다 [1].", "English", False),
+    ("E-9 비전문취업 자격입니다 [1].", "Korean", True),
+    ("The category is non-professional employment [1].", "Korean", False),
+    ("[1]", "English", False),
+])
+def test_answer_language_guard_allows_terms_but_rejects_drift(text, language, expected):
+    from visarag.assistant import answer_matches_language
+    assert answer_matches_language(text, language) is expected
+
+
+@pytest.mark.parametrize("question, language, reply", [
+    ("What is the E-9 visa category?", "English", "An English answer [1]."),
+    ("E-9 비전문취업은 무엇인가요?", "Korean", "한국어 답변입니다 [1]."),
+])
+def test_assistant_pins_language_despite_korean_sources(chunks, monkeypatch, question, language, reply):
+    from visarag import assistant, llm
+    engine = assistant.VisaAssistant(chunks=chunks, use_llm=False)
+    engine.use_llm = True
+    monkeypatch.setattr(engine, "retrieve", lambda *args: [chunks[3]])
+    requests = []
+    def chat(messages):
+        requests.append(messages)
+        return reply, {"total_tokens": 12}
+    monkeypatch.setattr(llm, "chat", chat)
+    result = engine.ask(question, mode="bm25")
+    assert result.text == reply and result.cited == [1]
+    assert len(requests) == 1
+    system, user = requests[0]
+    assert system["content"].startswith(assistant.SYSTEM_PROMPT)
+    assert f"Required answer language: {language}" in system["content"]
+    assert user["content"].endswith(assistant.language_instruction(language))
+    assert chunks[3].text in user["content"]
+
+
+def test_assistant_does_not_return_wrong_language_or_retry(chunks, monkeypatch):
+    from unittest.mock import Mock
+    from visarag import assistant, llm
+    from visarag.errors import ProviderError
+    engine = assistant.VisaAssistant(chunks=chunks, use_llm=False)
+    engine.use_llm = True
+    monkeypatch.setattr(engine, "retrieve", lambda *args: [chunks[3]])
+    chat = Mock(return_value=("한국어로 작성된 답변입니다 [1].", {}))
+    monkeypatch.setattr(llm, "chat", chat)
+    with pytest.raises(ProviderError, match="not generated in English"):
+        engine.ask("What is the E-9 visa category?")
+    chat.assert_called_once()

@@ -14,3 +14,7 @@
 !data/
 !data/public_raw/
 !data/public_raw/*.txt
+
+!web/fonts/
+!web/fonts/*.ttf
+!web/fonts/*.txt

@@ -1,0 +1,787 @@
+{
+  "tool": "comp-diff",
+  "version": 1,
+  "createdAt": "2026-10-26T07:18:53.569Z",
+  "label": "desktop",
+  "comp": "docs/design/modern-demo-v1.png",
+  "build": ".impeccable/review/desktop.png",
+  "spec": ".impeccable/build/spec.json",
+  "compSize": "1547x1017",
+  "buildSize": "1547x1017",
+  "align": "top",
+  "overall": 0.7103,
+  "verdict": "drift",
+  "scores": {
+    "overall": 0.7103,
+    "structure": 0.6777,
+    "color": 0.8925,
+    "colorIntersection": 0.7928,
+    "paletteMatch": 0.9461,
+    "detail": 0.6292,
+    "detailRaw": 0.7125,
+    "detailAdded": 0.1667,
+    "bands": 0.6182
+  },
+  "palette": {
+    "comp": [
+      {
+        "hex": "#f4f5f5",
+        "coverage": 0.7874
+      },
+      {
+        "hex": "#152939",
+        "coverage": 0.1846
+      },
+      {
+        "hex": "#27466d",
+        "coverage": 0.0113
+      },
+      {
+        "hex": "#9a9ba6",
+        "coverage": 0.0058
+      },
+      {
+        "hex": "#c5c5ce",
+        "coverage": 0.0055
+      },
+      {
+        "hex": "#081232",
+        "coverage": 0.0053
+      }
+    ],
+    "build": [
+      {
+        "hex": "#f6f8f6",
+        "coverage": 0.7728
+      },
+      {
+        "hex": "#192838",
+        "coverage": 0.1877
+      },
+      {
+        "hex": "#384a6f",
+        "coverage": 0.0194
+      },
+      {
+        "hex": "#aeaeb4",
+        "coverage": 0.0077
+      },
+      {
+        "hex": "#cadbf1",
+        "coverage": 0.0066
+      },
+      {
+        "hex": "#7b7b81",
+        "coverage": 0.0059
+      }
+    ]
+  },
+  "regions": [
+    {
+      "id": "rail",
+      "x": 0,
+      "y": 0,
+      "w": 0.1991,
+      "h": 1,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.8096,
+        "structure": 0.8213,
+        "color": 0.8493,
+        "colorIntersection": 0.6755,
+        "paletteMatch": 0.9429,
+        "detail": 0.6634,
+        "detailRaw": 0.6739,
+        "detailAdded": 0.0208,
+        "bands": 0.96
+      },
+      "verdict": "match",
+      "inkBox": {
+        "comp": {
+          "x": 27,
+          "y": 0,
+          "w": 281,
+          "h": 979
+        },
+        "build": {
+          "x": 24,
+          "y": 38,
+          "w": 247,
+          "h": 939
+        }
+      }
+    },
+    {
+      "id": "brand",
+      "x": 0.0569,
+      "y": 0.0354,
+      "w": 0.1306,
+      "h": 0.0521,
+      "kind": "text",
+      "score": {
+        "overall": 0.627,
+        "structure": 0.5943,
+        "color": 0.7881,
+        "colorIntersection": 0.5611,
+        "paletteMatch": 0.9104,
+        "detail": 0.402,
+        "detailRaw": 0.4697,
+        "detailAdded": 0.1354,
+        "bands": 0.7247
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 2,
+          "y": 4,
+          "w": 185,
+          "h": 49
+        },
+        "build": {
+          "x": 0,
+          "y": 2,
+          "w": 159,
+          "h": 43
+        }
+      }
+    },
+    {
+      "id": "ask-nav",
+      "x": 0.0097,
+      "y": 0.1288,
+      "w": 0.1803,
+      "h": 0.057,
+      "kind": "control",
+      "score": {
+        "overall": 0.679,
+        "structure": 0.7966,
+        "color": 0.597,
+        "colorIntersection": 0.1355,
+        "paletteMatch": 0.8455,
+        "detail": 0.5578,
+        "detailRaw": 0.6307,
+        "detailAdded": 0.1458,
+        "bands": 0.9
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 22,
+          "y": 18,
+          "w": 165,
+          "h": 23
+        },
+        "build": {
+          "x": 26,
+          "y": 20,
+          "w": 132,
+          "h": 18
+        }
+      }
+    },
+    {
+      "id": "search-methods",
+      "x": 0.0142,
+      "y": 0.233,
+      "w": 0.1752,
+      "h": 0.1613,
+      "kind": "control",
+      "score": {
+        "overall": 0.6142,
+        "structure": 0.6155,
+        "color": 0.7431,
+        "colorIntersection": 0.5479,
+        "paletteMatch": 0.8482,
+        "detail": 0.3859,
+        "detailRaw": 0.4484,
+        "detailAdded": 0.125,
+        "bands": 0.7576
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 5,
+          "y": 7,
+          "w": 132,
+          "h": 154
+        },
+        "build": {
+          "x": 2,
+          "y": 6,
+          "w": 158,
+          "h": 133
+        }
+      }
+    },
+    {
+      "id": "topics",
+      "x": 0.0162,
+      "y": 0.4936,
+      "w": 0.1681,
+      "h": 0.1868,
+      "kind": "control",
+      "score": {
+        "overall": 0.7064,
+        "structure": 0.8203,
+        "color": 0.8686,
+        "colorIntersection": 0.7323,
+        "paletteMatch": 0.9421,
+        "detail": 0.1661,
+        "detailRaw": 0.2182,
+        "detailAdded": 0.1042,
+        "bands": 0.2667
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 2,
+          "y": 3,
+          "w": 255,
+          "h": 181
+        },
+        "build": {
+          "x": 0,
+          "y": 38,
+          "w": 246,
+          "h": 152
+        }
+      }
+    },
+    {
+      "id": "owner",
+      "x": 0.0187,
+      "y": 0.939,
+      "w": 0.1551,
+      "h": 0.0265,
+      "kind": "text",
+      "score": {
+        "overall": 0.6881,
+        "structure": 0.711,
+        "color": 0.7852,
+        "colorIntersection": 0.5798,
+        "paletteMatch": 0.8958,
+        "detail": 0.5306,
+        "detailRaw": 0.5463,
+        "detailAdded": 0.0313,
+        "bands": 0.5667
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 3,
+          "y": 6,
+          "w": 188,
+          "h": 18
+        },
+        "build": {
+          "x": 0,
+          "y": 9,
+          "w": 143,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "topbar",
+      "x": 0.1991,
+      "y": 0,
+      "w": 0.8009,
+      "h": 0.0728,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.7906,
+        "structure": 0.9775,
+        "color": 0.9738,
+        "colorIntersection": 0.9547,
+        "paletteMatch": 0.9841,
+        "detail": 0.5199,
+        "detailRaw": 0.5199,
+        "detailAdded": 0,
+        "bands": 0.5
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 35,
+          "y": 29,
+          "w": 1166,
+          "h": 21
+        },
+        "build": {
+          "x": 34,
+          "y": 30,
+          "w": 1170,
+          "h": 15
+        }
+      }
+    },
+    {
+      "id": "breadcrumb",
+      "x": 0.2359,
+      "y": 0.0226,
+      "w": 0.1099,
+      "h": 0.0236,
+      "kind": "text",
+      "score": {
+        "overall": 0.6585,
+        "structure": 0.6463,
+        "color": 0.8978,
+        "colorIntersection": 0.8373,
+        "paletteMatch": 0.9305,
+        "detail": 0.3678,
+        "detailRaw": 0.3938,
+        "detailAdded": 0.0521,
+        "bands": 0.5571
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 8,
+          "y": 6,
+          "w": 114,
+          "h": 18
+        },
+        "build": {
+          "x": 0,
+          "y": 7,
+          "w": 74,
+          "h": 15
+        }
+      }
+    },
+    {
+      "id": "status",
+      "x": 0.8067,
+      "y": 0.0236,
+      "w": 0.0679,
+      "h": 0.0236,
+      "kind": "text",
+      "score": {
+        "overall": 0.5744,
+        "structure": 0.5082,
+        "color": 0.8686,
+        "colorIntersection": 0.8097,
+        "paletteMatch": 0.9003,
+        "detail": 0.2709,
+        "detailRaw": 0.2917,
+        "detailAdded": 0.0417,
+        "bands": 0.625
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 4,
+          "y": 7,
+          "w": 101,
+          "h": 14
+        },
+        "build": {
+          "x": 46,
+          "y": 8,
+          "w": 59,
+          "h": 9
+        }
+      }
+    },
+    {
+      "id": "heading",
+      "x": 0.2211,
+      "y": 0.1288,
+      "w": 0.4758,
+      "h": 0.0423,
+      "kind": "text",
+      "score": {
+        "overall": 0.6803,
+        "structure": 0.8489,
+        "color": 0.9288,
+        "colorIntersection": 0.8914,
+        "paletteMatch": 0.9489,
+        "detail": 0.0382,
+        "detailRaw": 0.1371,
+        "detailAdded": 0.1979,
+        "bands": 0.18
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 1,
+          "y": 5,
+          "w": 503,
+          "h": 37
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 478,
+          "h": 43
+        }
+      }
+    },
+    {
+      "id": "conversation",
+      "x": 0.214,
+      "y": 0.2075,
+      "w": 0.4848,
+      "h": 0.5978,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6965,
+        "structure": 0.5349,
+        "color": 0.9692,
+        "colorIntersection": 0.9473,
+        "paletteMatch": 0.981,
+        "detail": 0.5314,
+        "detailRaw": 0.6148,
+        "detailAdded": 0.1667,
+        "bands": 0.894
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 38,
+          "y": 23,
+          "w": 678,
+          "h": 551
+        },
+        "build": {
+          "x": 34,
+          "y": 25,
+          "w": 694,
+          "h": 583
+        }
+      }
+    },
+    {
+      "id": "question",
+      "x": 0.5042,
+      "y": 0.2271,
+      "w": 0.1771,
+      "h": 0.0246,
+      "kind": "text",
+      "score": {
+        "overall": 0.5871,
+        "structure": 0.5627,
+        "color": 0.7689,
+        "colorIntersection": 0.6047,
+        "paletteMatch": 0.8573,
+        "detail": 0.4065,
+        "detailRaw": 0.4638,
+        "detailAdded": 0.1146,
+        "bands": 0.525
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 1,
+          "y": 3,
+          "w": 266,
+          "h": 21
+        },
+        "build": {
+          "x": 77,
+          "y": 5,
+          "w": 197,
+          "h": 15
+        }
+      }
+    },
+    {
+      "id": "answer-title",
+      "x": 0.2838,
+      "y": 0.3392,
+      "w": 0.3891,
+      "h": 0.0305,
+      "kind": "text",
+      "score": {
+        "overall": 0.5719,
+        "structure": 0.7244,
+        "color": 0.8386,
+        "colorIntersection": 0.7722,
+        "paletteMatch": 0.8744,
+        "detail": 0,
+        "detailRaw": 0.0176,
+        "detailAdded": 0.1458,
+        "bands": 0
+      },
+      "verdict": "missing",
+      "inkBox": {
+        "comp": {
+          "x": 3,
+          "y": 0,
+          "w": 450,
+          "h": 30
+        },
+        "build": {
+          "x": 0,
+          "y": 27,
+          "w": 602,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "answer-body",
+      "x": 0.2385,
+      "y": 0.4031,
+      "w": 0.4331,
+      "h": 0.177,
+      "kind": "text",
+      "score": {
+        "overall": 0.581,
+        "structure": 0.3923,
+        "color": 0.9539,
+        "colorIntersection": 0.9404,
+        "paletteMatch": 0.9612,
+        "detail": 0.3955,
+        "detailRaw": 0.4892,
+        "detailAdded": 0.1875,
+        "bands": 0.87
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 1,
+          "w": 618,
+          "h": 179
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 664,
+          "h": 180
+        }
+      }
+    },
+    {
+      "id": "answer-sources",
+      "x": 0.2392,
+      "y": 0.6519,
+      "w": 0.4344,
+      "h": 0.0855,
+      "kind": "control",
+      "score": {
+        "overall": 0.7236,
+        "structure": 0.7792,
+        "color": 0.9343,
+        "colorIntersection": 0.9173,
+        "paletteMatch": 0.9435,
+        "detail": 0.2299,
+        "detailRaw": 0.3236,
+        "detailAdded": 0.1875,
+        "bands": 0.35
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 1,
+          "y": 13,
+          "w": 522,
+          "h": 66
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 329,
+          "h": 83
+        }
+      }
+    },
+    {
+      "id": "evidence",
+      "x": 0.7123,
+      "y": 0.1121,
+      "w": 0.278,
+      "h": 0.6922,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6701,
+        "structure": 0.6527,
+        "color": 0.6602,
+        "colorIntersection": 0.3418,
+        "paletteMatch": 0.8316,
+        "detail": 0.5545,
+        "detailRaw": 0.6691,
+        "detailAdded": 0.2292,
+        "bands": 0.92
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 35,
+          "y": 48,
+          "w": 349,
+          "h": 524
+        },
+        "build": {
+          "x": 26,
+          "y": 41,
+          "w": 352,
+          "h": 624
+        }
+      }
+    },
+    {
+      "id": "evidence-heading",
+      "x": 0.7324,
+      "y": 0.1544,
+      "w": 0.2482,
+      "h": 0.0708,
+      "kind": "text",
+      "score": {
+        "overall": 0.6304,
+        "structure": 0.7913,
+        "color": 0.5285,
+        "colorIntersection": 0.2542,
+        "paletteMatch": 0.6763,
+        "detail": 0.4744,
+        "detailRaw": 0.5734,
+        "detailAdded": 0.1979,
+        "bands": 0.3143
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 4,
+          "y": 5,
+          "w": 340,
+          "h": 63
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 341,
+          "h": 61
+        }
+      }
+    },
+    {
+      "id": "source-card",
+      "x": 0.7272,
+      "y": 0.2468,
+      "w": 0.2482,
+      "h": 0.2842,
+      "kind": "control",
+      "score": {
+        "overall": 0.6074,
+        "structure": 0.6001,
+        "color": 0.8341,
+        "colorIntersection": 0.6769,
+        "paletteMatch": 0.9188,
+        "detail": 0.2273,
+        "detailRaw": 0.3992,
+        "detailAdded": 0.3438,
+        "bands": 0.5418
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 23,
+          "y": 30,
+          "w": 338,
+          "h": 230
+        },
+        "build": {
+          "x": 18,
+          "y": 22,
+          "w": 337,
+          "h": 238
+        }
+      }
+    },
+    {
+      "id": "source-note",
+      "x": 0.7628,
+      "y": 0.5998,
+      "w": 0.2069,
+      "h": 0.0787,
+      "kind": "text",
+      "score": {
+        "overall": 0.5436,
+        "structure": 0.6403,
+        "color": 0.5706,
+        "colorIntersection": 0.1444,
+        "paletteMatch": 0.8001,
+        "detail": 0.1389,
+        "detailRaw": 0.2014,
+        "detailAdded": 0.125,
+        "bands": 0.6
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 1,
+          "y": 2,
+          "w": 269,
+          "h": 74
+        },
+        "build": {
+          "x": 0,
+          "y": 46,
+          "w": 300,
+          "h": 34
+        }
+      }
+    },
+    {
+      "id": "composer",
+      "x": 0.2127,
+      "y": 0.8319,
+      "w": 0.7776,
+      "h": 0.1082,
+      "kind": "control",
+      "score": {
+        "overall": 0.7786,
+        "structure": 0.8995,
+        "color": 0.9433,
+        "colorIntersection": 0.8976,
+        "paletteMatch": 0.9679,
+        "detail": 0.2186,
+        "detailRaw": 0.3436,
+        "detailAdded": 0.25,
+        "bands": 0.4333
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 39,
+          "y": 18,
+          "w": 1146,
+          "h": 75
+        },
+        "build": {
+          "x": 7,
+          "y": 10,
+          "w": 1183,
+          "h": 100
+        }
+      }
+    }
+  ],
+  "files": {
+    "sideBySide": "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/side-by-side.png",
+    "heatmap": "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/heatmap.png",
+    "regionFiles": [
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/rail.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/brand.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/ask-nav.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/search-methods.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/topics.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/owner.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/topbar.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/breadcrumb.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/status.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/heading.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/conversation.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/question.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/answer-title.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/answer-body.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/answer-sources.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/evidence.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/evidence-heading.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/source-card.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/source-note.png",
+      "/Users/kakhkhorov/Desktop/korea-visa-rag/.impeccable/review/diff/final/regions/composer.png"
+    ]
+  }
+}

@@ -265,3 +265,44 @@ definitions do not establish every subtype's eligibility, paperwork or points
 threshold. The assistant must still abstain when those details are absent.
 `scripts/extract_statute_annexes.py` pins the official PDF hash and reviewed row
 boundaries; refreshing a changed PDF requires a new layout review.
+
+
+## Modern web workspace
+
+The frontend still calls the same FastAPI endpoints. The redesign changes the
+layout and browser interaction, without changing retrieval or the Gemini prompt.
+`web/app.js` stores each answer's sources separately, so clicking an older
+citation opens that answer's original passages. All API text is escaped before
+limited bold, list and citation formatting; source URLs accept only HTTP(S).
+
+Desktop keeps the conversation and evidence in separate scrolling panes. On
+phones, the page scrolls, search settings open in a drawer, and the composer
+stays near the bottom. New replies scroll into view, but finishing a request
+only follows it if the visitor has not moved away. The drawer makes the rest of
+the workspace inert while open and closes with Escape.
+
+Newsreader headings use a bundled font with its OFL license. IBM Plex Sans KR
+continues to load from Google Fonts. Versioned CSS/JS URLs avoid stale assets
+after a release. `node --test tests/test_web.cjs` checks escaping, source URLs,
+list formatting and mobile reply navigation without an API key. `DESIGN.md`
+and `.impeccable/design.json` record the implemented visual system.
+
+
+## Keeping the answer language separate from sources
+
+The retrieved sources are Korean even when the visitor asks in English. The
+previous generic same-language instruction sometimes produced Korean replies.
+`response_language()` now uses only the question, removing visa codes before
+counting English and Korean word groups. Korean wins mixed-language ties;
+code-only questions default to English. This is a small heuristic for the two
+supported languages, so ambiguous mixed questions can still be classified badly.
+
+`language_instruction()` adds the selected language to the system instruction
+and repeats it after the question. Citation and source-only rules still apply.
+`answer_matches_language()` compares Latin letters and Hangul after removing
+parenthetical terms. It catches predominantly wrong-script responses while
+allowing brief original terms. It is not a general language detector or a legal
+accuracy check. A rejected reply raises a safe provider error with retry and
+keyword-search guidance. There is no automatic repair call, so the request
+limit still represents one answer-generation call. The extra instruction adds
+some input tokens. Keyless source search is unchanged.

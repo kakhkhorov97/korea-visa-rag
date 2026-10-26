@@ -13,8 +13,8 @@ The deployed release provides Gemini answers with official citations over
 search are enabled. The retrieval evaluation
 below uses the expanded corpus; the earlier 22-chunk baseline is retained.
 
-![Running Korea Visa Assistant](docs/images/screenshot.png)
-*Local statute-only app with a real Gemini answer and official citations, captured 2026-10-24. This is not a public deployment.*
+![Running Korea Visa Assistant](docs/images/cloud-run-modern.png)
+*Public Cloud Run demo with the modern workspace, a real Gemini answer and official sources, captured 2026-10-26.*
 
 ## Why
 
@@ -25,7 +25,7 @@ retrieves the exact article, answers from it, and links to the source for every 
 
 ## Features
 
-- **Bilingual Q&A:** ask in English or Korean; answers come back in the same language
+- **Bilingual Q&A:** English and Korean questions receive an explicit answer-language instruction. A script check rejects replies written mostly in the wrong language; short original Korean terms and source titles can remain.
 - **Citations on every claim** with links to the official source, and cited sources highlighted
 - **Hybrid retrieval:** Korean keyword search (BM25 + Kiwi) and semantic vector search, fused with RRF
 - **Free search-only mode:** runs with no API key, returning the most relevant official passages
@@ -33,7 +33,7 @@ retrieves the exact article, answers from it, and links to the source for every 
 - **Telegram bot** sharing the same engine: cited answers, linked sources, `/mode` switching
 - **REST API** with auto-generated docs (`/docs`)
 - **Evaluation pipeline** (hit@k, recall@k, MRR) and automated tests via GitHub Actions
-- Responsive layout with light/dark themes
+- Responsive workspace with a mobile search drawer and a separate evidence panel
 
 ## How it works
 
@@ -220,7 +220,7 @@ tests/           unit + API tests
 - [x] Collect HiKorea guides for D-2, D-4, D-10, E-7
 - [x] Label the existing 12 questions and publish the first statute-corpus results
 - [ ] Expand to 30+ questions and independently review answer quality
-- [ ] Deploy a public demo
+- [x] Deploy a public demo
 - [ ] Cross-encoder reranker, Upstage Solar comparison
 
 **Disclaimer:** general information, not legal advice. Confirm with the Immigration Contact Center (☎ 1345).
@@ -232,7 +232,7 @@ tests/           unit + API tests
 외국인 유학생·구직자 비자(D-2, D-4, D-10, E-7)에 대한 질문에 **공식 정부 자료만을 근거로** 답하는 RAG
 기반 웹 서비스입니다. 모든 답변에 출처(법령 조문, 링크)를 표시하며, 자료에 없는 내용은 모른다고 답합니다.
 
-**현재 상태:** 배포 준비 완료. 핵심 파이프라인, 웹 앱, 텔레그램 봇, 테스트, 첫 검색 평가(라벨링 질문 11개, 하이브리드 hit@5 1.000, MRR 0.939)를 마쳤습니다. Docker 이미지는 CI 스모크 테스트를 통과했고 Render Blueprint가 준비되어 있으며, 공개 URL은 아직 없습니다.
+**현재 상태:** Google Cloud Run에서 공개 포트폴리오 데모를 운영 중입니다. Gemini 답변과 출처를 제공하며, 공개 법령 자료 39개 청크로 21개 비자 유형을 검색합니다. 자세한 자격 요건 전체를 다루지는 않습니다. [데모 열기](https://korea-visa-rag-jwq77bpivq-uc.a.run.app/).
 
 **주요 기술적 특징**
 

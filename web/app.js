@@ -1,167 +1,232 @@
-// Front end for the Korea Visa Assistant. Plain JavaScript, no build step.
+// One shared RAG API; presentation and source inspection stay in the browser.
+const $ = (selector) => document.querySelector(selector);
+const messages = $('#messages');
+const input = $('#question');
+const form = $('#ask-form');
+const sendBtn = $('#send');
+const showText = $('#show-text');
+const status = $('#status');
+const modeNames = { bm25: 'Keyword search', vector: 'Meaning search', hybrid: 'Combined search' };
+const sourceSets = new Map();
+let nextAnswer = 0;
+let currentSources = null;
+let searchOnly = false;
+const DOCUMENT_ICON = '<svg viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 2h10l6 6v18H4z"/><path d="M14 2v7h6M8 13h8M8 17h8M8 21h5"/></svg>';
 
-const $ = (sel) => document.querySelector(sel);
-const messages = $("#messages");
-const form = $("#ask-form");
-const input = $("#question");
-const sendBtn = $("#send");
-const showText = $("#show-text");
-const status = $("#status");
-const modeNames = { bm25: "Keyword search", vector: "Meaning search", hybrid: "Combined search" };
-
-const BOT_ICON = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>`;
-
-// Escape text before inserting it as HTML (answers and sources are untrusted text).
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[c]);
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[character]);
 }
 
-// Minimal formatting for LLM answers: paragraphs, "- " bullet lists, and [n] citation badges.
-function formatAnswer(text) {
-  const blocks = escapeHtml(text).trim().split(/\n{2,}/);
-  return blocks.map((block) => {
-    const lines = block.split("\n");
-    const html = lines.every((l) => /^\s*([-*•]|\d+\.)\s+/.test(l))
-      ? `<ul>${lines.map((l) => `<li>${l.replace(/^\s*([-*•]|\d+\.)\s+/, "")}</li>`).join("")}</ul>`
-      : `<p>${lines.join("<br>")}</p>`;
-    return html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-               .replace(/\[(\d+)\]/g, '<span class="cite">[$1]</span>');
-  }).join("");
-}
-
-function safeUrl(url) {
-  return /^https?:\/\//i.test(url || "") ? url : null;
-}
-
-function renderSources(sources, cited) {
-  if (!sources.length) return "";
-  const items = sources.map((s) => {
-    const isCited = cited.includes(s.n);
-    const url = safeUrl(s.url);
-    const title = url
-      ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(s.citation)}</a>`
-      : `<span>${escapeHtml(s.citation)}</span>`;
-    return `
-      <div class="source${isCited ? " cited" : ""}">
-        <div class="source-head">
-          <span class="num">${s.n}</span>${title}
-          ${isCited ? '<span class="tag">cited</span>' : ""}
-        </div>
-        <pre class="passage" ${showText.checked ? "" : "hidden"}>${escapeHtml(s.text)}</pre>
-      </div>`;
-  }).join("");
-  return `<div class="sources"><span class="label">Official sources</span>${items}</div>`;
-}
-
-function addUserMessage(text) {
-  $("#empty")?.remove();
-  const el = document.createElement("div");
-  el.className = "msg-user";
-  el.textContent = text;
-  messages.appendChild(el);
-}
-
-function addBotMessage() {
-  const el = document.createElement("div");
-  el.className = "msg-bot";
-  el.innerHTML = `<div class="avatar">${BOT_ICON}</div>
-    <div class="card"><div class="typing" aria-label="Searching"><span></span><span></span><span></span></div></div>`;
-  messages.appendChild(el);
-  messages.scrollTop = messages.scrollHeight;
-  return el.querySelector(".card");
-}
-
-function renderAnswer(card, data) {
-  const searchOnly = data.mode === "search-only";
-  const answer = searchOnly
-    ? (data.sources.length
-      ? "Here are matching passages from official sources. Open a source link to read the full source."
-      : "No matching passages found. Try a visa code or different Korean keywords.")
-    : data.answer;
-  const count = data.sources.length;
-  const sourceLabel = count === 1 ? "passage" : "passages";
-  const method = searchOnly ? "Source search" : (modeNames[data.mode] || "Search");
-  card.innerHTML = `
-    <div class="answer${searchOnly ? " note" : ""}">${formatAnswer(answer)}</div>
-    ${renderSources(data.sources, data.cited || [])}
-    <span class="meta">${escapeHtml(method)} · ${count} ${sourceLabel} · ${escapeHtml(data.latency_s)}s</span>`;
-}
-
-async function ask(question) {
-  addUserMessage(question);
-  const card = addBotMessage();
-  sendBtn.disabled = true;
+function safeUrl(value) {
   try {
-    const mode = document.querySelector('input[name="mode"]:checked').value;
-    const res = await fetch("/api/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, mode }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || `Request failed (${res.status})`);
-    renderAnswer(card, data);
-  } catch (err) {
-    card.innerHTML = `<p class="answer error">${escapeHtml(err.message)}</p>`;
-  } finally {
-    sendBtn.disabled = false;
-    messages.scrollTop = messages.scrollHeight;
-    input.focus();
+    const url = new URL(value);
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : null;
+  } catch { return null; }
+}
+
+// Escape before adding our limited formatting. Only real source numbers become buttons.
+function formatAnswer(text, sourceNumbers = []) {
+  return escapeHtml(text).trim().split(/\n{2,}/).map((block) => {
+    // A model can put prose and a list in the same paragraph block.
+    const groups = [];
+    for (const line of block.split('\n')) {
+      const item = line.match(/^\s*([-*•]|\d+\.)\s+(.+)$/);
+      const tag = item ? 'ul' : 'p';
+      if (groups.at(-1)?.tag !== tag) groups.push({ tag, lines: [] });
+      groups.at(-1).lines.push(item ? `<li>${item[2]}</li>` : line);
+    }
+    const html = groups.map(({ tag, lines }) => `<${tag}>${lines.join(tag === 'p' ? '<br>' : '')}</${tag}>`).join('');
+    return html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[(\d+)\]/g, (match, number) => sourceNumbers.includes(Number(number))
+        ? `<button type="button" class="cite" data-source-number="${Number(number)}" aria-label="View source ${Number(number)}">[${Number(number)}]</button>`
+        : match);
+  }).join('');
+}
+
+function setMenu(open) {
+  $('.app-shell').classList.toggle('menu-open', open);
+  $('.workspace-content').inert = open && window.matchMedia('(max-width: 900px)').matches;
+  if (open) $('#focus-question').focus();
+  $('#menu-toggle').setAttribute('aria-expanded', String(open));
+  $('#menu-toggle').setAttribute('aria-label', open ? 'Close search settings' : 'Open search settings');
+}
+
+function inspectSources(record, number, moveFocus = false) {
+  currentSources = record;
+  const cited = record.cited || [];
+  const sources = record.sources;
+  $('#source-count').textContent = sources.length
+    ? `${cited.length} cited · ${sources.length} retrieved ${sources.length === 1 ? 'passage' : 'passages'}`
+    : 'No supporting passages were found.';
+  $('#expand-sources').hidden = sources.length === 0;
+  const first = number || cited[0] || sources[0]?.n;
+  $('#source-list').innerHTML = sources.length ? sources.map((source) => {
+    const url = safeUrl(source.url);
+    const isCited = cited.includes(source.n);
+    return `<details class="source" data-source-id="${source.n}" ${showText.checked || source.n === first ? 'open' : ''}>
+      <summary><span class="source-number">${source.n}</span><span class="source-title">${escapeHtml(source.citation)}<span class="source-cited">${isCited ? 'Cited in this answer' : 'Retrieved passage'}</span></span></summary>
+      <pre class="passage">${escapeHtml(source.text)}</pre>
+      ${url ? `<a class="source-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Open official source <span aria-hidden="true">↗</span></a>` : '<p class="error-help">Source link unavailable.</p>'}
+    </details>`;
+  }).join('') : '<p class="sources-empty">Try a visa code or a more specific question. The selected sources may not cover this topic.</p>';
+  if (moveFocus) {
+    const selected = [...document.querySelectorAll('.source')].find((element) => Number(element.dataset.sourceId) === first);
+    (selected?.querySelector('summary') || $('#evidence')).focus();
+    if (window.matchMedia('(max-width: 900px)').matches) $('#evidence').scrollIntoView({ behavior: 'auto', block: 'start' });
+    else selected?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
   }
 }
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const q = input.value.trim();
-  if (q.length < 2) return;
-  input.value = "";
-  ask(q);
+function renderAnswer(card, data) {
+  // Normalize numbers before interpolating them into attributes; all prose is escaped.
+  const sources = data.sources.map((source, index) => ({ ...source, n: index + 1 }));
+  const cited = (data.cited || []).filter((number) => Number.isInteger(number) && number > 0 && number <= sources.length);
+  const record = { sources, cited };
+  sourceSets.set(card.dataset.answerId, record);
+  const isSearch = data.mode === 'search-only';
+  const answer = isSearch
+    ? (sources.length ? 'Here are matching passages from official sources. Select a passage to read the original text.' : 'No matching passages found. Try a visa code or different Korean keywords.')
+    : data.answer;
+  const references = cited.length ? sources.filter((source) => cited.includes(source.n)) : sources;
+  card.innerHTML = `<h2 class="answer-heading">${DOCUMENT_ICON}${isSearch ? 'Official source passages' : 'Answer from your sources'}</h2>
+    <div class="answer${isSearch ? ' note' : ''}">${formatAnswer(answer, sources.map((source) => source.n))}</div>
+    ${references.length ? `<div class="answer-sources">${references.map((source) => {
+      const url = safeUrl(source.url);
+      return `<div class="answer-source"><span class="citation-index">${source.n}</span>${url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.citation)} <span aria-hidden="true">↗</span></a>` : `<span>${escapeHtml(source.citation)}</span>`}</div>`;
+    }).join('')}<button type="button" class="inspect-sources">View original passages →</button></div>` : ''}
+    <span class="meta">${escapeHtml(isSearch ? 'Source search' : modeNames[data.mode] || 'Search')} · ${sources.length} ${sources.length === 1 ? 'passage' : 'passages'} · ${escapeHtml(data.latency_s)}s</span>`;
+  inspectSources(record);
+}
+
+function setBusy(busy) {
+  sendBtn.disabled = busy;
+  messages.setAttribute('aria-busy', String(busy));
+  document.querySelectorAll('[data-query]').forEach((button) => { button.disabled = busy; });
+}
+
+// Phones scroll the page; desktop keeps the conversation in its own pane.
+function revealReply(bot) {
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    bot.scrollIntoView({ behavior: 'auto', block: 'start' });
+  } else messages.scrollTop = messages.scrollHeight;
+}
+
+function replyIsVisible(bot) {
+  const rect = bot.getBoundingClientRect();
+  const mobile = window.matchMedia('(max-width: 900px)').matches;
+  const bounds = mobile ? { top: 64, bottom: form.getBoundingClientRect().top } : messages.getBoundingClientRect();
+  return rect.bottom > bounds.top && rect.top < bounds.bottom;
+}
+
+async function ask(question) {
+  if (sendBtn.disabled) return;
+  $('#empty')?.remove();
+  setMenu(false);
+  const user = document.createElement('div');
+  user.className = 'msg-user';
+  user.textContent = question;
+  messages.appendChild(user);
+  const bot = document.createElement('div');
+  bot.className = 'msg-bot';
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.answerId = String(++nextAnswer);
+  card.innerHTML = '<div class="typing" role="status">Finding official sources…</div>';
+  bot.appendChild(card);
+  messages.appendChild(bot);
+  setBusy(true);
+  revealReply(bot);
+  let followReply = false;
+  try {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const response = await fetch('/api/ask', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, mode }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || `Request failed (${response.status})`);
+    followReply = replyIsVisible(bot);
+    renderAnswer(card, data);
+  } catch (error) {
+    followReply = replyIsVisible(bot);
+    card.innerHTML = `<h2 class="answer-heading">We couldn't complete that question.</h2><p class="answer error">${escapeHtml(error.message)}</p><p class="error-help">Try again shortly. Keyword search can help if meaning search is unavailable.</p>`;
+  } finally {
+    setBusy(false);
+    // Do not pull visitors back if they moved to an earlier answer or source.
+    if (followReply) revealReply(bot);
+    // Keep focus where the visitor moved it during the request.
+    if (document.activeElement === sendBtn || document.activeElement === document.body) input.focus({ preventScroll: true });
+  }
+}
+
+messages.addEventListener('click', (event) => {
+  const trigger = event.target.closest('.cite, .inspect-sources');
+  if (!trigger) return;
+  const record = sourceSets.get(trigger.closest('.card').dataset.answerId);
+  if (record) inspectSources(record, Number(trigger.dataset.sourceNumber) || undefined, true);
+});
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const question = input.value.trim();
+  if (question.length < 2 || sendBtn.disabled) return;
+  input.value = '';
+  input.style.height = '';
+  ask(question);
+});
+input.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    form.requestSubmit();
+  }
+});
+input.addEventListener('input', () => {
+  input.style.height = '';
+  input.style.height = `${Math.min(input.scrollHeight, 112)}px`;
+});
+document.querySelectorAll('[data-query]').forEach((button) => {
+  button.addEventListener('click', () => ask(searchOnly ? button.dataset.localQuery : button.dataset.query));
+});
+showText.addEventListener('change', () => {
+  document.querySelectorAll('.source').forEach((source) => { source.open = showText.checked; });
+});
+$('#menu-toggle').addEventListener('click', () => setMenu(!$('.app-shell').classList.contains('menu-open')));
+$('#focus-question').addEventListener('click', () => { setMenu(false); input.focus(); });
+window.addEventListener('resize', () => {
+  if (!window.matchMedia('(max-width: 900px)').matches) setMenu(false);
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && $('.app-shell').classList.contains('menu-open')) {
+    setMenu(false); $('#menu-toggle').focus();
+  }
+});
+document.addEventListener('click', (event) => {
+  if ($('.app-shell').classList.contains('menu-open') && !event.target.closest('#sidebar, #menu-toggle')) setMenu(false);
 });
 
-document.querySelectorAll(".example").forEach((btn) =>
-  btn.addEventListener("click", () => ask(btn.dataset.query || btn.textContent.trim())));
-
-showText.addEventListener("change", () =>
-  document.querySelectorAll(".passage").forEach((p) => (p.hidden = !showText.checked)));
-
-// Show whether the server runs in full AI mode or free search-only mode,
-// and disable retrieval modes that are not available.
-fetch("/api/health")
-  .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
-  .then(({ ok, d }) => {
-    if (!ok) throw new Error(d.detail);
-    status.textContent = d.llm ? "AI answers on" : "Source search";
-    status.className = `pill ${d.llm ? "pill-ok" : "pill-muted"}`;
-    $("#search-help").textContent = d.llm
-      ? "Ask in English or Korean. Answers include links to the official passages used."
-      : "Keyword search is on. Use a visa code or Korean keywords to find original source passages.";
-    const meaningAvailable = d.modes.includes("vector");
-    $("#mode-help").textContent = meaningAvailable
-      ? "Choose how to find passages. This changes the search method, not the source documents."
-      : "Meaning search is not enabled in this session, so meaning and combined search are unavailable.";
-    if (!d.llm) {
-      $("#empty-title")?.replaceChildren("Search the official visa sources");
-      $("#empty-help")?.replaceChildren("Try a visa code or Korean keywords, such as D-10 체류기간. You will see original passages and source links, without an AI-written answer.");
-      input.placeholder = "Try D-10 체류기간 or D-2 시간제 취업";
-      $("#examples-title").textContent = "Try a search";
-      document.querySelectorAll(".example").forEach((button) => {
-        button.textContent = button.dataset.localExample;
-        button.dataset.query = button.dataset.localQuery;
-      });
-      showText.checked = true;
-      document.querySelectorAll(".passage").forEach((p) => (p.hidden = false));
-    }
-    document.querySelectorAll('input[name="mode"]').forEach((r) => {
-      r.disabled = !d.modes.includes(r.value);
-      if (r.disabled && r.checked) document.querySelector('input[value="bm25"]').checked = true;
-    });
-  })
-  .catch((err) => {
-    status.textContent = "Server not ready";
-    status.className = "pill pill-warn";
-    status.title = err.message || "";
+fetch('/api/health').then(async (response) => {
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.detail || 'Health check unavailable');
+  searchOnly = !data.llm;
+  status.textContent = data.llm ? 'AI answers on' : 'Source search';
+  status.className = `pill ${data.llm ? 'pill-ok' : 'pill-muted'}`;
+  $('#search-help').textContent = data.llm
+    ? 'Ask in English or Korean. Follow every answer back to its official sources.'
+    : 'Keyword search is on. Use a visa code or Korean keywords to find original passages.';
+  $('#mode-help').textContent = data.modes.includes('vector')
+    ? 'Choose how sources are found.' : 'Meaning and combined search are unavailable. Keyword search is ready.';
+  document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+    radio.disabled = !data.modes.includes(radio.value);
+    if (radio.disabled && radio.checked) document.querySelector('input[value="bm25"]').checked = true;
   });
+  if (searchOnly) {
+    $('#empty-title')?.replaceChildren('Search the official visa sources');
+    $('#empty-help')?.replaceChildren('Try a visa code or Korean keywords. You will see original passages, without an AI-written answer.');
+    input.placeholder = 'Try D-10 체류기간 or E-9 비전문취업';
+  }
+}).catch((error) => {
+  status.textContent = 'Server not ready';
+  status.className = 'pill pill-warn';
+  status.title = error.message || '';
+  $('#search-help').textContent = 'The server could not be reached. Refresh to reconnect, or try again shortly.';
+});

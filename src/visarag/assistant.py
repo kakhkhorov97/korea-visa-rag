@@ -77,6 +77,44 @@ def cited_numbers(text: str, n_sources: int) -> list[int]:
     return sorted(n for n in nums if 1 <= n <= n_sources)
 
 
+def response_language(question: str) -> str:
+    """Choose from the question alone, never from the Korean retrieved sources.
+
+    Visa codes carry no language. Mixed questions use the more numerous word
+    groups, with Korean winning ties. Code-only queries default to English.
+    This is a small English/Korean heuristic, not a general language detector.
+    """
+    question = re.sub(r"\b[A-Z]-\d+(?:-\d+)?\b", "", question, flags=re.I)
+    english = len(re.findall(r"[A-Za-z]{2,}", question))
+    korean = len(re.findall(r"[가-힣ㄱ-ㅎㅏ-ㅣ]+", question))
+    return "Korean" if korean and korean >= english else "English"
+
+
+def language_instruction(language: str) -> str:
+    """Keep translated explanations separate from original source labels."""
+    return (
+        f"Required answer language: {language}. Write every explanation, list item, "
+        f"refusal and the final disclaimer in {language}. The sources are Korean; "
+        "their language must not determine your answer language. Translate supported "
+        "information faithfully without adding claims. Original official titles and "
+        "short Korean terms in parentheses may remain Korean. Keep [n] citations."
+    )
+
+
+def answer_matches_language(text: str, language: str) -> bool:
+    """Reject a mostly wrong-script answer, allowing short original terms.
+
+    This guard catches language drift; it does not validate legal accuracy or
+    prove that every word has the requested language. No extra AI call is made.
+    """
+    prose = re.sub(r"\([^()]*\)", "", text)
+    latin = len(re.findall(r"[A-Za-z]", prose))
+    hangul = len(re.findall(r"[가-힣ㄱ-ㅎㅏ-ㅣ]", prose))
+    if language == "English":
+        return latin > 0 and latin >= hangul
+    return hangul > 0 and hangul * 2 >= latin
+
+
 class VisaAssistant:
     def __init__(self, mode: str = "hybrid", top_k: int = TOP_K,
                  chunks: list[Chunk] | None = None, use_llm: bool | None = None):
@@ -126,11 +164,26 @@ class VisaAssistant:
 
         from . import llm
 
+        language = response_language(question)
+        instruction = language_instruction(language)
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Sources:\n\n{build_context(sources)}\n\nQuestion: {question}"},
+            {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{instruction}"},
+            {"role": "user", "content": (
+                f"Sources:\n\n{build_context(sources)}\n\n"
+                f"Question: {question}\n\n{instruction}"
+            )},
         ]
         text, usage = llm.chat(messages)
+        if not answer_matches_language(text, language):
+            from .errors import ProviderError
+
+            message = (
+                "The answer was not generated in English. Please try again, or use "
+                "keyword search to read the original source passages."
+                if language == "English" else
+                "한국어 답변을 생성하지 못했습니다. 다시 질문하거나 키워드 검색으로 원문을 확인해 주세요."
+            )
+            raise ProviderError(message)
         return Answer(
             question=question,
             text=text,
