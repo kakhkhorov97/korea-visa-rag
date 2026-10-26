@@ -1,0 +1,23 @@
+# Submit only after resource/build approval. Uses an explicitly scoped builder SA.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: [build, '-f', 'Dockerfile.beta', '-t', '${_IMAGE}', '.']
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        docker run --rm --entrypoint python '${_IMAGE}' -c "from pathlib import Path; assert not Path('/app/.env').exists(); assert not Path('/app/data/raw').exists(); assert not Path('/app/.git').exists()"
+        docker run -d --name smoke --memory=1g --cpus=1 -e SEARCH_ONLY=true -e KIWI_LIGHTWEIGHT=true -e PORT=8080 '${_IMAGE}'
+        trap 'docker logs smoke; docker rm -f smoke' EXIT
+        for attempt in $$(seq 1 60); do
+          if docker exec smoke python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')"; then break; fi
+          sleep 2
+        done
+        docker exec smoke python -c "import json,urllib.request; h=json.load(urllib.request.urlopen('http://localhost:8080/api/health')); assert h['chunks']==44 and h['llm'] is False; assert h['modes']==['bm25']; urllib.request.urlopen('http://localhost:8080/'); r=urllib.request.Request('http://localhost:8080/api/ask', data=json.dumps({'question':'D-10 구직'}).encode(), headers={'Content-Type':'application/json'}); a=json.load(urllib.request.urlopen(r)); assert a['sources'] and a['mode']=='search-only'"
+images: ['${_IMAGE}']
+options:
+  machineType: E2_STANDARD_2
+  logging: CLOUD_LOGGING_ONLY
+timeout: 1200s

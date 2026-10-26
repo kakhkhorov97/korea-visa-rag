@@ -21,3 +21,6 @@
 !web/fonts/
 !web/fonts/*.ttf
 !web/fonts/*.txt
+
+!Dockerfile.beta
+!cloudbuild.beta.yaml

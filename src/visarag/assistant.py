@@ -31,6 +31,11 @@ SEARCH_ONLY_NOTE = (
     "for your question. Add a Gemini API key to get a written, cited answer."
 )
 
+UNVERIFIED_NOTE = (
+    "The AI answer could not be verified. Here are the original official passages instead. "
+    "Check the relevant requirements with 1345 or HiKorea."
+)
+
 
 @dataclass
 class Answer:
@@ -42,6 +47,7 @@ class Answer:
     latency_s: float = 0.0
     usage: dict = field(default_factory=dict)
     evidence: list[dict] = field(default_factory=list)
+    fallback: bool = False
 
     def to_dict(self) -> dict:
         """JSON-friendly form, used by the API."""
@@ -53,6 +59,7 @@ class Answer:
             "latency_s": self.latency_s,
             "usage": self.usage,
             "evidence": self.evidence,
+            "fallback": self.fallback,
             "sources": [
                 {"n": i, "citation": c.citation(), "url": c.source_url,
                  "chunk_id": c.chunk_id, "text": c.text}
@@ -179,22 +186,24 @@ class VisaAssistant:
                 f"Question: {question}\n\n{instruction}"
             )},
         ]
-        raw, usage = llm.chat(messages, response_schema=GroundedReply.model_json_schema())
+        def source_fallback() -> Answer:
+            """Keep original passages visible if generation or verification fails."""
+            return Answer(question, UNVERIFIED_NOTE, sources, mode='search-only', fallback=True,
+                          latency_s=round(time.perf_counter() - start, 2))
+
+        try:
+            raw, usage = llm.chat(messages, response_schema=GroundedReply.model_json_schema())
+        except ProviderError:
+            return source_fallback()
         try:
             text, complete, evidence = checked_claims(raw, sources)
         except (ValueError, TypeError):
-            raise ProviderError('The answer could not be checked against the sources. Please try keyword search.') from None
+            return source_fallback()
         if not text:
             return Answer(question, abstention(language) + '\n\n' + disclaimer(language), [], mode=mode,
                           latency_s=round(time.perf_counter() - start, 2), usage=usage)
         if not answer_matches_language(text, language):
-            message = (
-                "The answer was not generated in English. Please try again, or use "
-                "keyword search to read the original source passages."
-                if language == "English" else
-                "한국어 답변을 생성하지 못했습니다. 다시 질문하거나 키워드 검색으로 원문을 확인해 주세요."
-            )
-            raise ProviderError(message)
+            return source_fallback()
         if not complete:
             text += ('\n\nThe sources cover only part of this question. Confirm the remaining details with 1345 or HiKorea.'
                      if language == 'English' else

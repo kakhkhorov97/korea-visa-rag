@@ -1,0 +1,7 @@
+title: Visa beta usage writer
+description: Read and conditionally replace request counters; bind only to usage/public-beta/.
+stage: GA
+includedPermissions:
+  - storage.objects.get
+  - storage.objects.create
+  - storage.objects.delete

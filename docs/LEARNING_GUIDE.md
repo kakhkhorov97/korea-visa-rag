@@ -246,9 +246,11 @@ chunks to the public corpus in the image. A different corpus/model needs a new
 image and matching snapshot. Startup fails if verification fails.
 
 The usage ledger is different: it counts requests rather than storing retrieval
-data. It remains temporary on Cloud Run, so its daily limit resets on instance
-replacement. The proposed first deployment disables Gemini calls explicitly.
-Paid AI needs a separately reviewed durable usage store and provider controls.
+data. The first Cloud Run release used SQLite in temporary storage, so its daily
+limit reset on instance replacement. The prepared beta uses a small private
+Cloud Storage object per UTC day and generation preconditions to reserve shared
+slots across restarts. It fails closed if the counter is unavailable. Its limits
+are global request counts, not per-person limits or a currency spending cap.
 See [Google Cloud deployment](GOOGLE_CLOUD.md) for costs, identities, commands
 and rollback. The subsequently approved private deployment passed live API and
 two-revision index-restoration checks; details are in the
@@ -265,6 +267,24 @@ definitions do not establish every subtype's eligibility, paperwork or points
 threshold. The assistant must still abstain when those details are absent.
 `scripts/extract_statute_annexes.py` pins the official PDF hash and reviewed row
 boundaries; refreshing a changed PDF requires a new layout review.
+
+The next local corpus has 44 chunks: five extra Enforcement Rules articles
+cover applications, fees, payment and references to supporting-document annexes.
+It does not include the annex checklists themselves. The running public revision
+still has 39 chunks until the new image and matching private snapshot are
+approved and deployed. Source-only search is now the default in the prepared
+frontend. AI use requires an explicit adult/South Korea acknowledgment, and
+common identifier patterns are rejected before retrieval. This pattern check
+cannot catch every kind of personal information.
+
+The AI response now asks Gemini for separate claims and source quotations.
+`grounding.py` checks that each quotation is present in the cited passage and
+adds citation markers in code. If the AI reply cannot pass those checks, or a
+provider call fails, `assistant.py` returns the original passages with a clear
+notice. Matching a quote cannot prove that the model translated or interpreted
+it correctly. The 36-question beta review has source-based retrieval labels;
+its generated answers still require independent legal review. See
+[the beta plan](PUBLIC_BETA_DEPLOYMENT.md).
 
 
 ## Modern web workspace

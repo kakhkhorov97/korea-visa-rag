@@ -1,0 +1,13 @@
+{
+  "displayName":"Visa beta unavailable",
+  "combiner":"OR","enabled":true,
+  "conditions":[{
+    "displayName":"Two checkers report failure for five minutes",
+    "conditionThreshold":{
+      "filter":"resource.type=\"uptime_url\" AND metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" AND metric.labels.check_id=\"REPLACE_WITH_CREATED_CHECK_ID\"",
+      "comparison":"COMPARISON_GT","thresholdValue":1,"duration":"300s",
+      "aggregations":[{"alignmentPeriod":"300s","perSeriesAligner":"ALIGN_NEXT_OLDER","crossSeriesReducer":"REDUCE_COUNT_FALSE"}]
+    }
+  }],
+  "notificationChannels":[]
+}

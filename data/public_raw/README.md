@@ -1,10 +1,13 @@
 # Public statute corpus
 
 This directory is the only source-data directory copied into the public Docker
-image. It contains 17 selected articles of the Immigration Act and its
-Enforcement Decree, plus 22 selected statutory annex rows (39 chunks total).
+image. It contains 22 selected articles of the Immigration Act, its Enforcement
+Decree and Enforcement Rules, plus 22 selected statutory annex rows (44 chunks total).
 The original sources were retrieved 2026-10-24; 17 additional category rows were
 retrieved 2026-10-26 from the same pinned official annex.
+Five Enforcement Rules articles (34, 72, 73, 74 and 76) were also retrieved
+2026-10-26. They cover application representatives, fees and exceptions,
+payment, exemptions, and references to the annexes for supporting documents.
 Each file records its official URL, retrieval date and extracted-text SHA-256.
 
 Category definitions cover D-2, D-4, D-7, D-8, D-9, D-10; E-1 through E-9;
@@ -23,7 +26,8 @@ before applying reviewed row boundaries. The D-10 stay-limit excerpt preserves
 the complete exception footnote. Table spacing is retained; these are excerpts,
 not complete annexes or translations.
 
-This is a small demonstration corpus. It omits administrative guidance,
+This is a small demonstration corpus. Article 76 names annexes 5 and 5-2;
+their actual document checklists are not included. The corpus omits administrative guidance,
 occupation-specific qualifications, student-work conditions, and cumulative
 D-10 extension policies. A source's statutory ceiling must not be treated as a
 promise that a particular applicant receives that stay period.

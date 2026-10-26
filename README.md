@@ -135,7 +135,7 @@ embedding providers or models; old vectors cannot be reused with a different emb
 
 ### Public demo package
 
-Docker uses only the 39 official statute chunks in `data/public_raw/`, covering
+The next Docker package uses 44 official statute chunks in `data/public_raw/`, covering
 21 broad visa categories. See the corpus README for the exact list and omissions. The
 HiKorea manual and local extracts are excluded, along with `.env` and local
 indexes. See [source scope and reuse basis](data/public_raw/README.md).
@@ -155,7 +155,7 @@ storage, secret settings, and API usage limits.
 The repository includes a Docker smoke test and an alternative Render Blueprint
 (`render.yaml`, Free plan without a paid disk, `KIWI_LIGHTWEIGHT=true`).
 
-The app is deployed publicly on Google Cloud Run with Gemini enabled. The
+The current live app is deployed publicly on Google Cloud Run with Gemini enabled. The
 production container build and live API checks passed. The current release
 restored all 39 saved vectors from private Cloud Storage without re-embedding;
 F-6, E-9 and H-1 source searches passed before publication.
@@ -165,6 +165,15 @@ See [deployment and costs](docs/GOOGLE_CLOUD.md) and the
 Gemini uses a pinned Secret Manager version and the existing Free-tier API
 project. Live English/Korean citation checks and meaning search passed before
 activation. Provider quotas can temporarily limit answers; paid billing was not enabled.
+
+A 44-chunk public beta is prepared locally and has **not** been published. It
+adds source-only search as the default, an adult/South Korea acknowledgment for
+AI answers, a privacy/coverage page, durable shared request limits, and checks
+that source quotations match before generated claims are shown. If generation
+fails or evidence cannot be checked, the app shows original passages instead.
+The new 36-question review measures retrieval and exposes answer issues; it is
+not an independent legal-accuracy certification. See the
+[beta deployment plan](docs/PUBLIC_BETA_DEPLOYMENT.md).
 
 ### Telegram bot
 
@@ -189,7 +198,8 @@ Returns the answer, the mode used, cited source numbers, and each source's citat
 Questions are trimmed before validation and must contain 2 to 500 characters after trimming.
 Invalid questions return HTTP 422 before the assistant runs.
 API requests are limited per client and paid usage has a persistent daily request cap.
-Gemini quota and connection failures return safe, readable errors.
+Gemini quota, evidence-check and connection failures fall back to the original
+passages when retrieval has succeeded. Request-limit failures return safe errors.
 `GET /api/search?q=D-10` returns source passages without generating an answer.
 Its `q` parameter follows the same trimming and length rules as questions.
 

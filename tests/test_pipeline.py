@@ -497,12 +497,37 @@ def test_assistant_pins_language_despite_korean_sources(chunks, monkeypatch, que
 def test_assistant_does_not_return_wrong_language_or_retry(chunks, monkeypatch):
     from unittest.mock import Mock
     from visarag import assistant, llm
-    from visarag.errors import ProviderError
     engine = assistant.VisaAssistant(chunks=chunks, use_llm=False)
     engine.use_llm = True
     monkeypatch.setattr(engine, "retrieve", lambda *args: [chunks[3]])
     chat = Mock(return_value=(json.dumps({"complete": True, "claims": [{"text": "한국어로 작성된 답변입니다.", "evidence": [{"source": 1, "quote": chunks[3].text[:80]}]}]}), {}))
     monkeypatch.setattr(llm, "chat", chat)
-    with pytest.raises(ProviderError, match="not generated in English"):
-        engine.ask("What is the E-9 visa category?")
+    answer = engine.ask("What is the E-9 visa category?")
+    assert answer.mode == 'search-only' and answer.fallback
+    assert answer.sources == [chunks[3]] and answer.cited == []
+    assert '한국어로 작성된' not in answer.text
+    chat.assert_called_once()
+
+
+@pytest.mark.parametrize('failure', ['bad_quote', 'provider'])
+def test_unverified_ai_returns_original_passages_without_another_call(chunks, monkeypatch, failure):
+    from unittest.mock import Mock
+    from visarag import assistant, llm
+    from visarag.errors import ProviderError
+
+    engine = assistant.VisaAssistant(chunks=chunks, use_llm=False)
+    engine.use_llm = True
+    monkeypatch.setattr(engine, 'retrieve', lambda *args: [chunks[3]])
+    if failure == 'bad_quote':
+        result = (json.dumps({'complete': True, 'claims': [{'text': 'Unsupported answer.',
+                  'evidence': [{'source': 1, 'quote': '없는 내용을 지어낸 문장입니다.'}]}]}), {})
+        chat = Mock(return_value=result)
+    else:
+        chat = Mock(side_effect=ProviderError('The AI service is unavailable.'))
+    monkeypatch.setattr(llm, 'chat', chat)
+
+    answer = engine.ask('What is the rule?')
+    assert answer.mode == 'search-only' and answer.fallback
+    assert answer.sources == [chunks[3]] and answer.cited == [] and answer.evidence == []
+    assert 'original official passages' in answer.text
     chat.assert_called_once()

@@ -88,7 +88,9 @@ function renderAnswer(card, data) {
   sourceSets.set(card.dataset.answerId, record);
   const isSearch = data.mode === 'search-only';
   const answer = isSearch
-    ? (sources.length ? 'Here are matching passages from official sources. Select a passage to read the original text.' : 'No matching passages found. Try a visa code or different Korean keywords.')
+    ? (data.fallback ? 'The AI answer could not be verified. Read the original official passages below, and confirm the requirements with 1345 or HiKorea.'
+      : sources.length ? 'Here are matching passages from official sources. Select a passage to read the original text.'
+        : 'No matching passages found. Try a visa code or different Korean keywords.')
     : data.answer;
   const references = cited.length ? sources.filter((source) => cited.includes(source.n)) : sources;
   card.innerHTML = `<h2 class="answer-heading">${DOCUMENT_ICON}${isSearch ? 'Official source passages' : 'Answer from your sources'}</h2>
@@ -146,7 +148,8 @@ async function ask(question) {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, mode, source_only: searchOnly, ai_ack: $('#ai-ack').checked }),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || `Request failed (${response.status})`);
+    if (!response.ok) throw new Error(typeof data.detail === 'string'
+      ? data.detail : `Please check your question and try again (${response.status}).`);
     followReply = replyIsVisible(bot);
     renderAnswer(card, data);
   } catch (error) {

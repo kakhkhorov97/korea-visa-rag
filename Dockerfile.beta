@@ -1,0 +1,6 @@
+# Reuse the verified dependency layer. The ordinary Dockerfile remains a full build.
+FROM us-central1-docker.pkg.dev/project-a5074080-2d38-4a35-8b4/visa/app@sha256:d73d620784cb2b40302ab9bfe24ab28eb7c0b415a5a4254ceeb1b883b78851b1
+COPY src/ src/
+COPY web/ web/
+COPY scripts/build_index.py scripts/serve.py scripts/
+COPY data/public_raw/ data/public_raw/
