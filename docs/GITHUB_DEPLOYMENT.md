@@ -15,6 +15,10 @@ updated gate. The Gemini key stays in Cloud Run's Secret Manager mapping; the
 workflow does not receive that key. GitHub does not store a Google service
 account key.
 
+The build uses Cloud Build's default e2-standard-2 worker. Do not set
+`options.machineType` to that default in `cloudbuild.beta.yaml`; the build
+submission rejects it as an unused option.
+
 ## One-time setup (not yet done)
 
 Complete these steps in the existing Google Cloud project **after reviewing IAM

@@ -32,6 +32,10 @@ def test_beta_lifecycle_keeps_existing_rule_and_excludes_releases():
 
 
 def test_github_release_requires_manual_main_branch_and_keyless_auth():
+    build = yaml.load((ROOT / 'cloudbuild.beta.yaml').read_text(), Loader=yaml.BaseLoader)
+    # Cloud Build's default worker is already e2-standard-2. Explicitly setting
+    # that default caused gcloud builds submit to reject the config as unused.
+    assert build['options'] == {'logging': 'CLOUD_LOGGING_ONLY'}
     workflow = yaml.load((ROOT / '.github/workflows/deploy-cloud-run.yml').read_text(),
                          Loader=yaml.BaseLoader)
     assert list(workflow['on']) == ['workflow_dispatch']
