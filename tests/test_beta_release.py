@@ -2,6 +2,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,3 +29,21 @@ def test_beta_lifecycle_keeps_existing_rule_and_excludes_releases():
             'matchesPrefix': ['usage/public-beta/']}} in proposed
     prefixes = [p for rule in proposed for p in rule['condition'].get('matchesPrefix', [])]
     assert not any(p.startswith(('releases/', 'documents/')) for p in prefixes)
+
+
+def test_github_release_requires_manual_main_branch_and_keyless_auth():
+    workflow = yaml.load((ROOT / '.github/workflows/deploy-cloud-run.yml').read_text(),
+                         Loader=yaml.BaseLoader)
+    assert list(workflow['on']) == ['workflow_dispatch']
+    assert workflow['permissions'] == {'contents': 'read', 'id-token': 'write'}
+    job = workflow['jobs']['deploy']
+    assert "github.ref == 'refs/heads/main'" in job['if']
+    assert job['environment'] == 'production'
+    auth = next(step for step in job['steps'] if step.get('uses', '').startswith('google-github-actions/auth@'))
+    assert 'workload_identity_provider' in auth['with']
+    assert 'credentials_json' not in auth['with']
+    script = (ROOT / 'scripts/deploy_from_github.sh').read_text()
+    assert '--no-traffic --tag=ci-candidate' in script
+    assert script.index('candidate-ai-answer.json') < script.index('--to-revisions="${CANDIDATE_REVISION}=100"')
+    assert '--to-revisions="${GOOD_REVISION}=100"' in script
+    assert 'VISARAG_SNAPSHOT_SHA256' in script

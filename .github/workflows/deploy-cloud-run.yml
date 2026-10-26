@@ -1,0 +1,53 @@
+name: Deploy Cloud Run beta
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: visa-cloud-run-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'kakhkhorov97/korea-visa-rag' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    env:
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+      DEPLOY_SA: ${{ vars.GCP_DEPLOY_SA }}
+      REGION: us-central1
+      SERVICE: korea-visa-rag
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check deployment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PROJECT_ID"
+          test -n "$WIF_PROVIDER"
+          test -n "$DEPLOY_SA"
+          test "$GITHUB_REF" = refs/heads/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt && pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --test tests/test_web.cjs
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Build, check candidate, and promote
+        shell: bash
+        run: bash scripts/deploy_from_github.sh

@@ -263,6 +263,9 @@ Gemini is now enabled using the existing Free-tier project. Cloud Run references
 `visa-gemini-key:1` in Secret Manager; the key is never included in the image or
 frontend. Switching `SEARCH_ONLY` off also makes the restored vector index
 available, which enables meaning and combined search in the existing UI.
+The [GitHub Actions release guide](GITHUB_DEPLOYMENT.md) shows how a later
+code-only update can use short-lived Google identity and a zero-traffic
+candidate. GitHub pushes run tests; a manual release action moves live traffic.
 
 The expanded public corpus contains 21 visa-category definitions (39 chunks
 including the existing articles and D-10 stay-limit excerpt). Complete annex

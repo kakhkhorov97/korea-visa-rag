@@ -1,4 +1,5 @@
 .env
+gha-creds-*.json
 # macOS Finder metadata, including files in nested folders
 .DS_Store
 __pycache__/

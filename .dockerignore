@@ -1,4 +1,5 @@
 **
+gha-creds-*.json
 !requirements.txt
 !Dockerfile
 !src/

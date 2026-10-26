@@ -1,5 +1,6 @@
 # Explicit upload allowlist. Never upload .env, local documents, indexes or Git.
 **
+gha-creds-*.json
 !Dockerfile
 !.dockerignore
 !requirements.txt

@@ -179,6 +179,10 @@ fails or evidence cannot be checked, the app shows original passages instead.
 The new 36-question review measures retrieval and exposes answer issues; it is
 not an independent legal-accuracy certification. See the
 [beta deployment record and rollback guide](docs/PUBLIC_BETA_DEPLOYMENT.md).
+For future code-only releases, the [manual GitHub Actions deployment guide](docs/GITHUB_DEPLOYMENT.md)
+uses keyless Google authentication and a tested Cloud Run candidate. Pushing
+alone still runs checks only; the release action needs one-time setup and a
+manual start from `main`.
 
 ### Telegram bot
 
