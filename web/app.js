@@ -10,7 +10,8 @@ const modeNames = { bm25: 'Keyword search', vector: 'Meaning search', hybrid: 'C
 const sourceSets = new Map();
 let nextAnswer = 0;
 let currentSources = null;
-let searchOnly = false;
+let searchOnly = true;
+let serverHealth = null;
 const DOCUMENT_ICON = '<svg viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 2h10l6 6v18H4z"/><path d="M14 2v7h6M8 13h8M8 17h8M8 21h5"/></svg>';
 
 function escapeHtml(value) {
@@ -142,7 +143,7 @@ async function ask(question) {
   try {
     const mode = document.querySelector('input[name="mode"]:checked').value;
     const response = await fetch('/api/ask', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, mode }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, mode, source_only: searchOnly, ai_ack: $('#ai-ack').checked }),
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || `Request failed (${response.status})`);
@@ -204,26 +205,33 @@ document.addEventListener('click', (event) => {
   if ($('.app-shell').classList.contains('menu-open') && !event.target.closest('#sidebar, #menu-toggle')) setMenu(false);
 });
 
+function refreshCapabilities() {
+  if (!serverHealth) return;
+  const data = serverHealth;
+  searchOnly = !data.llm || !$('#ai-ack').checked;
+  $('#privacy-choice').hidden = !data.llm;
+  status.textContent = searchOnly ? 'Source search' : 'AI answers on';
+  status.className = `pill ${searchOnly ? 'pill-muted' : 'pill-ok'}`;
+  $('#search-help').textContent = searchOnly
+    ? 'Keyword search is on. Use a visa code or Korean keywords. Enable AI answers below for English or Korean explanations.'
+    : 'Ask in English or Korean. Follow every answer back to its official sources.';
+  $('#mode-help').textContent = searchOnly ? 'Keyword search uses no AI calls.' : 'Choose how sources are found.';
+  document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+    radio.disabled = !data.modes.includes(radio.value) || (searchOnly && radio.value !== 'bm25');
+    if (radio.disabled && radio.checked) document.querySelector('input[value="bm25"]').checked = true;
+  });
+  $('#empty-title')?.replaceChildren(searchOnly ? 'Search the official visa sources' : 'What would you like to know?');
+  $('#empty-help')?.replaceChildren(searchOnly
+    ? 'Use a visa code or Korean keywords to read original passages. AI answers are optional.'
+    : 'Explore Korean study, work and family visa categories. Start with a visa code or choose a topic.');
+  input.placeholder = searchOnly ? 'Try D-10 체류기간 or E-9 비전문취업' : 'Ask about a Korean visa… / 비자 질문을 입력하세요';
+}
+$('#ai-ack').addEventListener('change', refreshCapabilities);
 fetch('/api/health').then(async (response) => {
   const data = await response.json();
   if (!response.ok) throw new Error(data.detail || 'Health check unavailable');
-  searchOnly = !data.llm;
-  status.textContent = data.llm ? 'AI answers on' : 'Source search';
-  status.className = `pill ${data.llm ? 'pill-ok' : 'pill-muted'}`;
-  $('#search-help').textContent = data.llm
-    ? 'Ask in English or Korean. Follow every answer back to its official sources.'
-    : 'Keyword search is on. Use a visa code or Korean keywords to find original passages.';
-  $('#mode-help').textContent = data.modes.includes('vector')
-    ? 'Choose how sources are found.' : 'Meaning and combined search are unavailable. Keyword search is ready.';
-  document.querySelectorAll('input[name="mode"]').forEach((radio) => {
-    radio.disabled = !data.modes.includes(radio.value);
-    if (radio.disabled && radio.checked) document.querySelector('input[value="bm25"]').checked = true;
-  });
-  if (searchOnly) {
-    $('#empty-title')?.replaceChildren('Search the official visa sources');
-    $('#empty-help')?.replaceChildren('Try a visa code or Korean keywords. You will see original passages, without an AI-written answer.');
-    input.placeholder = 'Try D-10 체류기간 or E-9 비전문취업';
-  }
+  serverHealth = data;
+  refreshCapabilities();
 }).catch((error) => {
   status.textContent = 'Server not ready';
   status.className = 'pill pill-warn';

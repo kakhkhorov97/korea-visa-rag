@@ -70,7 +70,7 @@ def embed_query(texts: list[str]) -> list[list[float]]:
 
 
 @provider_call
-def chat(messages: list[dict], temperature: float = 0.0) -> tuple[str, dict]:
+def chat(messages: list[dict], temperature: float = 0.0, *, response_schema: dict | None = None) -> tuple[str, dict]:
     system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
     contents = [
         types.Content(
@@ -82,7 +82,11 @@ def chat(messages: list[dict], temperature: float = 0.0) -> tuple[str, dict]:
     resp = client().models.generate_content(
         model=GEMINI_CHAT_MODEL,
         contents=contents,
-        config=types.GenerateContentConfig(system_instruction=system, temperature=temperature, max_output_tokens=1536),
+        config=types.GenerateContentConfig(
+            system_instruction=system, temperature=temperature, max_output_tokens=1536,
+            response_mime_type='application/json' if response_schema else None,
+            response_json_schema=response_schema,
+        ),
     )
     if not resp.text:
         raise ProviderError("Gemini returned no answer text. Please try again.")

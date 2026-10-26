@@ -2,6 +2,7 @@
 These tests need no API key: the vector test uses a fake embedding function."""
 
 import sys
+import json
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from visarag.assistant import build_context, cited_numbers  # noqa: E402
+from visarag.grounding import GROUNDING_INSTRUCTION
 from visarag.chunking import chunk_document, chunk_guide  # noqa: E402
 from visarag.documents import Document, parse_document  # noqa: E402
 from visarag.metrics import hit_at_k, recall_at_k, reciprocal_rank  # noqa: E402
@@ -381,7 +383,7 @@ def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypa
     gemini_models.embed_content.side_effect = fake_embed_content
     gemini_models.generate_content.return_value = types.GenerateContentResponse(
         candidates=[types.Candidate(content=types.Content(
-            role="model", parts=[types.Part.from_text(text="테스트 답변 [1].")]))],
+            role="model", parts=[types.Part.from_text(text=json.dumps({"complete": True, "claims": [{"text": "테스트 답변입니다.", "evidence": [{"source": 1, "quote": chunks[3].text[:80]}]}]}))]))],
     )
     monkeypatch.setattr(assistant, "INDEX_DIR", tmp_path)
     monkeypatch.setattr(assistant, "HAS_GEMINI", True)
@@ -397,7 +399,7 @@ def test_gemini_assistant_answers_with_citations(chunks, gemini_models, monkeypa
     request = gemini_models.generate_content.call_args.kwargs
     assert chunks[3].text in request["contents"][0].parts[0].text
     assert request["config"].system_instruction == (
-        assistant.SYSTEM_PROMPT + "\n\n" + assistant.language_instruction("Korean")
+        assistant.SYSTEM_PROMPT + "\n\n" + assistant.language_instruction("Korean") + "\n\n" + GROUNDING_INSTRUCTION
     )
 
 
@@ -477,12 +479,13 @@ def test_assistant_pins_language_despite_korean_sources(chunks, monkeypatch, que
     engine.use_llm = True
     monkeypatch.setattr(engine, "retrieve", lambda *args: [chunks[3]])
     requests = []
-    def chat(messages):
+    def chat(messages, **kwargs):
+        import json
         requests.append(messages)
-        return reply, {"total_tokens": 12}
+        return json.dumps({"complete": True, "claims": [{"text": reply.replace(" [1]", ""), "evidence": [{"source": 1, "quote": chunks[3].text[:80]}]}]}), {"total_tokens": 12}
     monkeypatch.setattr(llm, "chat", chat)
     result = engine.ask(question, mode="bm25")
-    assert result.text == reply and result.cited == [1]
+    assert result.text.startswith(reply.replace(" [1]", "") + " [1]") and result.cited == [1]
     assert len(requests) == 1
     system, user = requests[0]
     assert system["content"].startswith(assistant.SYSTEM_PROMPT)
@@ -498,7 +501,7 @@ def test_assistant_does_not_return_wrong_language_or_retry(chunks, monkeypatch):
     engine = assistant.VisaAssistant(chunks=chunks, use_llm=False)
     engine.use_llm = True
     monkeypatch.setattr(engine, "retrieve", lambda *args: [chunks[3]])
-    chat = Mock(return_value=("한국어로 작성된 답변입니다 [1].", {}))
+    chat = Mock(return_value=(json.dumps({"complete": True, "claims": [{"text": "한국어로 작성된 답변입니다.", "evidence": [{"source": 1, "quote": chunks[3].text[:80]}]}]}), {}))
     monkeypatch.setattr(llm, "chat", chat)
     with pytest.raises(ProviderError, match="not generated in English"):
         engine.ask("What is the E-9 visa category?")

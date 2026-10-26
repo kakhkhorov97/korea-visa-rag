@@ -174,3 +174,14 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
 .msg-bot { scroll-margin-top: 84px; }
+
+.privacy-choice { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.privacy-choice summary { cursor: pointer; color: var(--accent); padding: 5px 0; }
+.privacy-choice p { margin: 8px 0; max-width: 75ch; }
+.privacy-choice label { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); max-width: 75ch; }
+.privacy-choice input { margin-top: 5px; accent-color: var(--accent); flex: none; }
+.privacy-page { height: auto; min-height: 100%; }
+.privacy-page main { max-width: 75ch; margin: 0 auto; padding: 36px 24px 70px; }
+.privacy-page h1 { font: 400 clamp(30px, 5vw, 42px)/1.15 var(--display); margin-top: 32px; }
+.privacy-page h2 { font-size: 21px; margin: 36px 0 10px; }
+@media (max-width: 900px) { .privacy-choice { font-size: 14px; } .privacy-choice label { font-size: 16px; } }

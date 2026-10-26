@@ -36,7 +36,7 @@ def test_snapshot_survives_two_empty_filesystems_without_embedding(tmp_path):
 def test_bm25_snapshot_needs_no_vector_database(tmp_path):
     data = snapshot.export_snapshot(RAW, tmp_path / 'absent', MODEL, bm25_only=True)
     result = snapshot.restore_snapshot(data, hashlib.sha256(data).hexdigest(), RAW, tmp_path, MODEL)
-    assert result['chunks'] == 39 and result['vectors'] is False
+    assert result['chunks'] == len(snapshot.public_chunks(RAW)) and result['vectors'] is False
     assert not (tmp_path / 'index').exists()
 
 
@@ -112,7 +112,7 @@ def test_cloud_startup_restores_before_starting_server(tmp_path, monkeypatch):
     monkeypatch.setattr(serve.subprocess, 'run', lambda *a, **kw: pytest.fail('Must not rebuild'))
 
     def verify_startup(*args, **kwargs):
-        assert len(load_chunks(tmp_path / 'processed/chunks.jsonl')) == 39
+        assert len(load_chunks(tmp_path / 'processed/chunks.jsonl')) == len(snapshot.public_chunks(RAW))
         assert kwargs['port'] == 8080 and kwargs['workers'] == 1
         assert kwargs['proxy_headers'] is False
 

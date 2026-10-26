@@ -13,7 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, BeforeValidator, Field, field_validator
 
 from .assistant import VisaAssistant
-from .config import ROOT, DATA_DIR, API_REQUESTS_PER_MINUTE, API_DAILY_AI_REQUESTS, API_MAX_CONCURRENT_AI
+from .config import (ROOT, DATA_DIR, API_REQUESTS_PER_MINUTE, API_DAILY_AI_REQUESTS,
+                     API_MAX_CONCURRENT_AI, API_DAILY_REQUESTS, API_USAGE_URI, PUBLIC_BETA)
 from .errors import ProviderError
 from .limits import UsageLimits
 
@@ -28,6 +29,12 @@ app = FastAPI(
 
 @lru_cache(maxsize=1)
 def get_limits() -> UsageLimits:
+    if API_USAGE_URI:
+        from .cloud_limits import CloudUsageLimits
+        return CloudUsageLimits(API_USAGE_URI, API_REQUESTS_PER_MINUTE, API_DAILY_AI_REQUESTS,
+                                API_DAILY_REQUESTS, API_MAX_CONCURRENT_AI)
+    if PUBLIC_BETA:
+        raise HTTPException(503, 'Public beta requires the shared usage counter.')
     return UsageLimits(DATA_DIR / "usage.sqlite3", API_REQUESTS_PER_MINUTE,
                        API_DAILY_AI_REQUESTS, API_MAX_CONCURRENT_AI)
 
@@ -42,6 +49,8 @@ class AskRequest(BaseModel):
     question: str = Field(..., min_length=2, max_length=500,
                           examples=["Can I work part-time on a D-2 student visa?"])
     mode: str = Field("hybrid", description="hybrid | bm25 | vector")
+    source_only: bool = False
+    ai_ack: bool = False
 
     @field_validator("question", mode="before")
     @classmethod
@@ -61,13 +70,20 @@ def get_assistant() -> VisaAssistant:
 @app.get("/api/health")
 def health() -> dict:
     a = get_assistant()
-    return {"status": "ok", "chunks": len(a.chunks), "llm": a.use_llm, "modes": a.available_modes}
+    return {"status": "ok", "chunks": len(a.chunks), "llm": a.use_llm, "modes": a.available_modes,
+            "ai_ack_required": PUBLIC_BETA, "shared_limits": bool(API_USAGE_URI)}
 
 
 @app.post("/api/ask")
 def ask(req: AskRequest, request: Request) -> dict:
     assistant = get_assistant()
-    with get_limits().reserve(request.client.host if request.client else "unknown", assistant.use_llm):
+    from .privacy import check_question, require_ai_ack
+    check_question(req.question)
+    paid = assistant.use_llm and not req.source_only
+    require_ai_ack(req.ai_ack, PUBLIC_BETA and paid)
+    with get_limits().reserve(request.client.host if request.client else "unknown", paid):
+        if req.source_only:
+            return assistant.ask(req.question, mode='bm25', source_only=True).to_dict()
         return assistant.ask(req.question, mode=req.mode).to_dict()
 
 
@@ -77,9 +93,13 @@ def search(
     q: Annotated[str, Query(min_length=2, max_length=500), BeforeValidator(str.strip)],
     mode: str = "bm25",
     k: int = 5,
+    ai_ack: bool = False,
 ) -> dict:
     assistant = get_assistant()
     actual_mode = mode if mode in assistant.available_modes else assistant.mode
+    from .privacy import check_question, require_ai_ack
+    check_question(q)
+    require_ai_ack(ai_ack, PUBLIC_BETA and actual_mode != 'bm25')
     with get_limits().reserve(request.client.host if request.client else "unknown", actual_mode != "bm25"):
         chunks = assistant.retrieve(q, mode=mode, k=min(max(k, 1), 20))
     return {"query": q, "results": [
@@ -94,3 +114,8 @@ app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 @app.get("/", include_in_schema=False)
 def index() -> FileResponse:
     return FileResponse(WEB_DIR / "index.html")
+
+
+@app.get('/privacy', include_in_schema=False)
+def privacy_notice():
+    return FileResponse(WEB_DIR / 'privacy.html')

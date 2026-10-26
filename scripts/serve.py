@@ -7,6 +7,8 @@ from pathlib import Path
 
 def main():
     root = Path(__file__).resolve().parents[1]
+    if os.getenv('VISARAG_PUBLIC_BETA', '').lower() == 'true' and not os.getenv('VISARAG_USAGE_URI'):
+        raise RuntimeError('Public beta requires a durable VISARAG_USAGE_URI')
     if os.getenv('K_SERVICE') and not os.getenv('VISARAG_SNAPSHOT_URI'):
         raise RuntimeError('Cloud Run requires a pinned durable VISARAG_SNAPSHOT_URI')
     if os.getenv('VISARAG_SNAPSHOT_URI'):
@@ -21,7 +23,7 @@ def main():
         subprocess.run([sys.executable, str(root / 'scripts/build_index.py'), '--no-embed'], check=True)
     import uvicorn
     uvicorn.run('visarag.api:app', host='0.0.0.0', port=int(os.getenv('PORT', '8000')),
-                proxy_headers=False, workers=1)
+                proxy_headers=False, access_log=False, workers=1)
 
 
 if __name__ == '__main__':

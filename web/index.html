@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=modern-4">
+  <link rel="stylesheet" href="/static/styles.css?v=beta-1">
 </head>
 <body>
   <a class="skip-link" href="#question">Skip to question</a>
@@ -70,16 +70,23 @@
           </aside>
         </div>
         <div class="composer-area">
+          <details class="privacy-choice" id="privacy-choice">
+            <summary>Enable AI answers · privacy and access</summary>
+            <p>AI beta for adults in South Korea. Questions and selected official passages are sent to Google Gemini. Do not enter personal information.</p>
+            <label><input type="checkbox" id="ai-ack"> I am 18 or older, using this AI beta from South Korea, and will ask general questions without personal information.</label>
+            <p lang="ko">AI 베타는 대한민국에서 이용하는 만 18세 이상을 대상으로 합니다. 개인정보를 입력하지 마세요.</p>
+            <a href="/privacy" target="_blank" rel="noopener">Read privacy and coverage details ↗</a>
+          </details>
           <form id="ask-form" class="composer">
             <label for="question" class="sr-only">Your visa question</label>
             <textarea id="question" rows="1" maxlength="500" required minlength="2" placeholder="Ask about a Korean visa… / 비자 질문을 입력하세요" aria-describedby="composer-help"></textarea>
             <button type="submit" id="send" aria-label="Send question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 4 17 8-17 8 3-8zM7 12h14"/></svg></button>
           </form>
-          <p class="disclaimer" id="composer-help">General information, not legal advice. Confirm requirements with <span class="nowrap">1345 or HiKorea.</span></p>
+          <p class="disclaimer" id="composer-help">Public beta · <a href="/privacy">Privacy and coverage</a> · General information, not legal advice. Confirm requirements with <span class="nowrap">1345 or HiKorea.</span></p>
         </div>
       </div>
     </main>
   </div>
-  <script src="/static/app.js?v=modern-4"></script>
+  <script src="/static/app.js?v=beta-1"></script>
 </body>
 </html>

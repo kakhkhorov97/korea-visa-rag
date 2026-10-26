@@ -15,7 +15,7 @@ steps:
           if docker exec smoke python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')"; then break; fi
           sleep 2
         done
-        docker exec smoke python -c "import json,urllib.request; h=json.load(urllib.request.urlopen('http://localhost:8080/api/health')); assert h['chunks']==39 and h['llm'] is False; assert h['modes']==['bm25']; urllib.request.urlopen('http://localhost:8080/'); r=urllib.request.Request('http://localhost:8080/api/ask', data=json.dumps({'question':'D-10 구직'}).encode(), headers={'Content-Type':'application/json'}); a=json.load(urllib.request.urlopen(r)); assert a['sources'] and a['mode']=='search-only'"
+        docker exec smoke python -c "import json,urllib.request; h=json.load(urllib.request.urlopen('http://localhost:8080/api/health')); assert h['chunks']==44 and h['llm'] is False; assert h['modes']==['bm25']; urllib.request.urlopen('http://localhost:8080/'); r=urllib.request.Request('http://localhost:8080/api/ask', data=json.dumps({'question':'D-10 구직'}).encode(), headers={'Content-Type':'application/json'}); a=json.load(urllib.request.urlopen(r)); assert a['sources'] and a['mode']=='search-only'"
 images: ['${_IMAGE}']
 options:
   machineType: E2_STANDARD_2

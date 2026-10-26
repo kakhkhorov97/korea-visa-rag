@@ -19,13 +19,12 @@ and residence rules (체류자격) using ONLY the numbered sources provided.
 
 Rules:
 1. Answer in the same language as the question (Korean or English).
-2. Every factual sentence must end with a citation like [1] or [2][3] pointing to the sources.
+2. Every factual claim needs evidence from numbered sources. The app adds [n] citations.
 3. If the sources do not contain the answer, say so plainly and suggest contacting the \
 Immigration Contact Center (☎ 1345) or HiKorea. Never guess or use outside knowledge.
 4. Quote visa codes, periods, and amounts exactly as written in the sources.
 5. Keep it concise: a direct answer first, then the key conditions as a short list.
-6. End with: "This is general information, not legal advice. Rules change; confirm with \
-1345 or HiKorea." (translate it if answering in Korean)."""
+6. The app adds the general-information disclaimer in the required language."""
 
 SEARCH_ONLY_NOTE = (
     "Search-only mode (no AI answer): these are the most relevant official passages "
@@ -42,6 +41,7 @@ class Answer:
     cited: list[int] = field(default_factory=list)   # 1-based source numbers used
     latency_s: float = 0.0
     usage: dict = field(default_factory=dict)
+    evidence: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """JSON-friendly form, used by the API."""
@@ -52,6 +52,7 @@ class Answer:
             "cited": self.cited,
             "latency_s": self.latency_s,
             "usage": self.usage,
+            "evidence": self.evidence,
             "sources": [
                 {"n": i, "citation": c.citation(), "url": c.source_url,
                  "chunk_id": c.chunk_id, "text": c.text}
@@ -150,12 +151,12 @@ class VisaAssistant:
         ranked = self.retrievers[mode].search(question)
         return [self.by_id[cid] for cid, _ in ranked[: k or self.top_k] if cid in self.by_id]
 
-    def ask(self, question: str, mode: str | None = None) -> Answer:
+    def ask(self, question: str, mode: str | None = None, *, source_only: bool = False) -> Answer:
         start = time.perf_counter()
-        mode = mode if mode in self.retrievers else self.mode
+        mode = 'bm25' if source_only else mode if mode in self.retrievers else self.mode
         sources = self.retrieve(question, mode)
 
-        if not self.use_llm:
+        if source_only or not self.use_llm:
             text = SEARCH_ONLY_NOTE if sources else (
                 "No matching passages found. Try different keywords, or contact ☎ 1345."
             )
@@ -163,20 +164,30 @@ class VisaAssistant:
                           latency_s=round(time.perf_counter() - start, 2))
 
         from . import llm
+        from .grounding import GroundedReply, GROUNDING_INSTRUCTION, checked_claims, abstention, disclaimer
+        from .errors import ProviderError
 
         language = response_language(question)
         instruction = language_instruction(language)
+        if not sources:
+            return Answer(question, abstention(language) + '\n\n' + disclaimer(language), [], mode=mode,
+                          latency_s=round(time.perf_counter() - start, 2))
         messages = [
-            {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{instruction}"},
+            {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{instruction}\n\n{GROUNDING_INSTRUCTION}"},
             {"role": "user", "content": (
                 f"Sources:\n\n{build_context(sources)}\n\n"
                 f"Question: {question}\n\n{instruction}"
             )},
         ]
-        text, usage = llm.chat(messages)
+        raw, usage = llm.chat(messages, response_schema=GroundedReply.model_json_schema())
+        try:
+            text, complete, evidence = checked_claims(raw, sources)
+        except (ValueError, TypeError):
+            raise ProviderError('The answer could not be checked against the sources. Please try keyword search.') from None
+        if not text:
+            return Answer(question, abstention(language) + '\n\n' + disclaimer(language), [], mode=mode,
+                          latency_s=round(time.perf_counter() - start, 2), usage=usage)
         if not answer_matches_language(text, language):
-            from .errors import ProviderError
-
             message = (
                 "The answer was not generated in English. Please try again, or use "
                 "keyword search to read the original source passages."
@@ -184,6 +195,11 @@ class VisaAssistant:
                 "한국어 답변을 생성하지 못했습니다. 다시 질문하거나 키워드 검색으로 원문을 확인해 주세요."
             )
             raise ProviderError(message)
+        if not complete:
+            text += ('\n\nThe sources cover only part of this question. Confirm the remaining details with 1345 or HiKorea.'
+                     if language == 'English' else
+                     '\n\n자료가 질문의 일부만 다룹니다. 나머지 내용은 1345 또는 하이코리아에서 확인해 주세요.')
+        text += '\n\n' + disclaimer(language)
         return Answer(
             question=question,
             text=text,
@@ -192,4 +208,5 @@ class VisaAssistant:
             cited=cited_numbers(text, len(sources)),
             latency_s=round(time.perf_counter() - start, 2),
             usage=usage,
+            evidence=evidence,
         )
