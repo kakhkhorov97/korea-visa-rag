@@ -119,6 +119,8 @@ You'll have a table.
 - Run `uvicorn visarag.api:app --reload --app-dir src` and open http://localhost:8000/docs.
   FastAPI generated that page from the `AskRequest` model. Try `/api/ask` from there.
 - In `web/app.js`, follow one question: `ask()` → `fetch("/api/ask")` → `renderAnswer()`.
+- `web/favicon.svg` is the browser-tab version of the document mark. Both pages link to it
+  through `/static/`, which FastAPI serves from `web/`.
 - The optional **Search options** panel uses friendly labels: Keyword search = `bm25`,
   Meaning search = `vector`, Combined search = `hybrid`. The API still uses those original
   mode values. In local mode, the UI explains the Korean keyword limitation and shows

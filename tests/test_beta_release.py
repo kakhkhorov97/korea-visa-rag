@@ -12,8 +12,10 @@ def test_package_contains_only_reviewed_public_data():
     spec.loader.exec_module(module)
     names = {p.relative_to(ROOT).as_posix() for p in module.files()}
     assert len({n for n in names if n.startswith('data/public_raw/') and n.endswith('.txt')}) == 44
-    assert {'Dockerfile.beta', 'cloudbuild.beta.yaml', 'web/privacy.html',
+    assert {'Dockerfile.beta', 'cloudbuild.beta.yaml', 'web/privacy.html', 'web/favicon.svg',
             'src/visarag/cloud_limits.py', 'src/visarag/grounding.py'} <= names
+    for ignore_file in ('.gcloudignore', '.dockerignore'):
+        assert '!web/*.svg' in (ROOT / ignore_file).read_text()
     assert not any(n.startswith(('data/raw/', 'data/originals/', 'data/releases/', '.git/'))
                    or n.endswith(('.env', '.sqlite3', '.hwp')) for n in names)
 

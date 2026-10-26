@@ -6,15 +6,16 @@ using only official government sources.
 
 > 한국어 설명은 [아래](#한국어)에 있습니다.
 
-**Status:** Public portfolio demo in development:
+**Status:** Public portfolio beta:
 [open Korea Visa Assistant](https://korea-visa-rag-jwq77bpivq-uc.a.run.app/).
-The deployed release provides Gemini answers with official citations over
-39 statute chunks covering 21 visa categories. Keyword, meaning and combined
-search are enabled. The retrieval evaluation
-below uses the expanded corpus; the earlier 22-chunk baseline is retained.
+The live release starts with free keyword source search over 44 public statute
+chunks covering 21 visa categories. Adult visitors in South Korea can opt in to
+Gemini answers with verified source quotations and citations. Meaning and
+combined search are available after that opt-in. Coverage is limited and the
+answers are general information, not legal advice.
 
-![Running Korea Visa Assistant](docs/images/cloud-run-modern.png)
-*Public Cloud Run demo with the modern workspace, a real Gemini answer and official sources, captured 2026-10-26.*
+![Running Korea Visa Assistant](docs/images/public-beta-live.jpg)
+*Public Cloud Run beta showing a D-10 source search and an official law passage, captured 2026-10-26.*
 
 ## Why
 
@@ -28,7 +29,7 @@ retrieves the exact article, answers from it, and links to the source for every 
 - **Bilingual Q&A:** English and Korean questions receive an explicit answer-language instruction. A script check rejects replies written mostly in the wrong language; short original Korean terms and source titles can remain.
 - **Citations on every claim** with links to the official source, and cited sources highlighted
 - **Hybrid retrieval:** Korean keyword search (BM25 + Kiwi) and semantic vector search, fused with RRF
-- **Free search-only mode:** runs with no API key, returning the most relevant official passages
+- **Free search-only mode:** returns the most relevant official passages, with or without an AI key
 - **Optional search controls:** keyword, meaning and combined search, with explanations
 - **Telegram bot** sharing the same engine: cited answers, linked sources, `/mode` switching
 - **REST API** with auto-generated docs (`/docs`)
@@ -71,7 +72,7 @@ See [the source format](data/raw/README.md) when adding documents.
 
 ## Results
 
-Measured on 2026-10-26 with `KIWI_LIGHTWEIGHT=true python eval/run_eval.py`: 39 statute chunks,
+The earlier baseline below was measured on 2026-10-26 with `KIWI_LIGHTWEIGHT=true python eval/run_eval.py`: 39 statute chunks,
 11 labeled in-scope questions, and one excluded out-of-scope question. Five
 in-scope questions have partial source coverage and remain in the scores.
 These retrieval metrics do not measure legal answer accuracy. This small set
@@ -87,6 +88,10 @@ Use `python eval/run_eval.py --k 10` to score the top 10 results. `--k` must be 
 | BM25 | 0.818 | 0.636 | 0.818 |
 | Vector | 1.000 | 0.818 | 0.818 |
 | Hybrid (RRF) | 1.000 | 0.818 | 0.939 |
+
+The 44-chunk beta's separate 36-question review reports hybrid hit@5 0.969,
+recall@5 0.891 and MRR 0.935 on 32 source-labeled questions. These are
+retrieval measures, not legal answer accuracy; see the [beta review](eval/BETA_REVIEW_2026-10-26.md).
 
 For the free Render profile, `KIWI_LIGHTWEIGHT=true` keeps real Kiwi morphology
 with optional dictionaries disabled. Its measured keyword-search scores match
@@ -135,7 +140,7 @@ embedding providers or models; old vectors cannot be reused with a different emb
 
 ### Public demo package
 
-The next Docker package uses 44 official statute chunks in `data/public_raw/`, covering
+The beta Docker package uses 44 official statute chunks in `data/public_raw/`, covering
 21 broad visa categories. See the corpus README for the exact list and omissions. The
 HiKorea manual and local extracts are excluded, along with `.env` and local
 indexes. See [source scope and reuse basis](data/public_raw/README.md).
@@ -155,10 +160,10 @@ storage, secret settings, and API usage limits.
 The repository includes a Docker smoke test and an alternative Render Blueprint
 (`render.yaml`, Free plan without a paid disk, `KIWI_LIGHTWEIGHT=true`).
 
-The current live app is deployed publicly on Google Cloud Run with Gemini enabled. The
-production container build and live API checks passed. The current release
-restored all 39 saved vectors from private Cloud Storage without re-embedding;
-F-6, E-9 and H-1 source searches passed before publication.
+The live app runs on Google Cloud Run with Gemini enabled behind the visitor's
+explicit opt-in. The current release restores all 44 saved vectors from an
+immutable private Cloud Storage snapshot without re-embedding. Its container
+build and live health, source search, privacy, consent and citation checks passed.
 See [deployment and costs](docs/GOOGLE_CLOUD.md) and the
 [original release record](docs/CLOUD_RELEASE_2026-10-25.md) and
 [expanded release record](docs/EXPANDED_RELEASE_2026-10-26.md).
@@ -166,14 +171,14 @@ Gemini uses a pinned Secret Manager version and the existing Free-tier API
 project. Live English/Korean citation checks and meaning search passed before
 activation. Provider quotas can temporarily limit answers; paid billing was not enabled.
 
-A 44-chunk public beta is prepared locally and has **not** been published. It
-adds source-only search as the default, an adult/South Korea acknowledgment for
+The 44-chunk public beta was published on 2026-10-26. It uses source-only search
+as the default, an adult/South Korea acknowledgment for
 AI answers, a privacy/coverage page, durable shared request limits, and checks
 that source quotations match before generated claims are shown. If generation
 fails or evidence cannot be checked, the app shows original passages instead.
 The new 36-question review measures retrieval and exposes answer issues; it is
 not an independent legal-accuracy certification. See the
-[beta deployment plan](docs/PUBLIC_BETA_DEPLOYMENT.md).
+[beta deployment record and rollback guide](docs/PUBLIC_BETA_DEPLOYMENT.md).
 
 ### Telegram bot
 
@@ -193,6 +198,10 @@ The bot uses long polling, so it needs no public URL. Without a Gemini key it ru
 curl -X POST localhost:8000/api/ask -H "Content-Type: application/json" \
      -d '{"question": "Can I work part-time on a D-2 visa?", "mode": "hybrid"}'
 ```
+
+For the public beta API, request official passages with `"source_only": true`.
+AI requests require `"ai_ack": true` after reading the site's privacy and
+access notice; this flag is a self-attestation, not age or location verification.
 
 Returns the answer, the mode used, cited source numbers, and each source's citation, URL and text.
 Questions are trimmed before validation and must contain 2 to 500 characters after trimming.
@@ -216,7 +225,7 @@ src/visarag/
   metrics.py     hit@k, recall@k, MRR
   api.py         FastAPI app: JSON API + serves the web front end
   telegram_bot.py Telegram bot interface (same engine)
-web/             index.html, styles.css, app.js (no build step)
+web/             index.html, styles.css, app.js, favicon.svg (no build step)
 scripts/         fetch_laws.py, build_index.py, find_chunks.py
 eval/            questions.jsonl, run_eval.py
 tests/           unit + API tests
@@ -242,7 +251,7 @@ tests/           unit + API tests
 외국인 유학생·구직자 비자(D-2, D-4, D-10, E-7)에 대한 질문에 **공식 정부 자료만을 근거로** 답하는 RAG
 기반 웹 서비스입니다. 모든 답변에 출처(법령 조문, 링크)를 표시하며, 자료에 없는 내용은 모른다고 답합니다.
 
-**현재 상태:** Google Cloud Run에서 공개 포트폴리오 데모를 운영 중입니다. Gemini 답변과 출처를 제공하며, 공개 법령 자료 39개 청크로 21개 비자 유형을 검색합니다. 자세한 자격 요건 전체를 다루지는 않습니다. [데모 열기](https://korea-visa-rag-jwq77bpivq-uc.a.run.app/).
+**현재 상태:** Google Cloud Run에서 공개 베타 데모를 운영 중입니다. 기본은 무료 법령 검색이며, 한국에 있는 성인 사용자가 동의하면 Gemini 답변과 출처를 제공합니다. 공개 법령 자료 44개 청크로 21개 비자 유형을 검색합니다. 자세한 자격 요건 전체를 다루지는 않습니다. [데모 열기](https://korea-visa-rag-jwq77bpivq-uc.a.run.app/).
 
 **주요 기술적 특징**
 

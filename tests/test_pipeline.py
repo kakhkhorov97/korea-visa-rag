@@ -114,6 +114,7 @@ def test_search_only_assistant(chunks):
     ans = a.ask("유학생 시간제 취업 허가", mode="hybrid")      # falls back to bm25
     assert ans.mode == "search-only"
     assert ans.sources[0].chunk_id == chunks[3].chunk_id
+    assert "Gemini API key" not in ans.text
     d = ans.to_dict()
     assert d["sources"][0]["n"] == 1 and d["sources"][0]["url"].startswith("https://")
 
@@ -137,9 +138,12 @@ def test_api_endpoints(chunks):
         assert res["question"] == "D-10 구직 체류기간"
         assert res["mode"] == "search-only" and res["sources"][0]["chunk_id"] == chunks[2].chunk_id
         assert client.post("/api/ask", json={"question": ""}).status_code == 422
-        assert client.get("/").status_code == 200
+        home = client.get("/")
+        assert home.status_code == 200
+        assert '<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">' in home.text
+        assert '/static/favicon.svg' in client.get('/privacy').text
         assert health["modes"] == ["bm25"]  # UI disables unavailable search methods.
-        for asset in ["/static/app.js", "/static/styles.css"]:
+        for asset in ["/static/app.js", "/static/styles.css", "/static/favicon.svg"]:
             response = client.get(asset)
             assert response.status_code == 200 and response.text.strip()
     finally:

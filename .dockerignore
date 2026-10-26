@@ -8,6 +8,7 @@
 !web/*.html
 !web/*.css
 !web/*.js
+!web/*.svg
 !scripts/
 !scripts/build_index.py
 !scripts/serve.py

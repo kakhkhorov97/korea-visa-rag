@@ -28,7 +28,7 @@ Immigration Contact Center (☎ 1345) or HiKorea. Never guess or use outside kno
 
 SEARCH_ONLY_NOTE = (
     "Search-only mode (no AI answer): these are the most relevant official passages "
-    "for your question. Add a Gemini API key to get a written, cited answer."
+    "for your question."
 )
 
 UNVERIFIED_NOTE = (
