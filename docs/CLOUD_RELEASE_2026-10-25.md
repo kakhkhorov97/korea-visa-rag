@@ -6,16 +6,16 @@ upgrades are excluded. No Git staging, commit or push is part of this work.
 
 ## Verified account and infrastructure
 
-- Project: `project-a5074080-2d38-4a35-8b4`, number `77889838176`, active.
+- Project: `YOUR_PROJECT_ID`, number `YOUR_PROJECT_NUMBER`, active.
 - Billing: enabled on the previously inspected Free Trial account. No upgrade.
 - Region: `us-central1`.
-- Private bucket: `project-a5074080-2d38-4a35-8b4-visa-data`.
+- Private bucket: `YOUR_PROJECT_ID-visa-data`.
   Public access prevention is enforced and uniform bucket-level access is enabled.
 - Lifecycle: deletes only `build/source/` staging objects after 14 days.
 - Artifact Registry: Docker repository `visa`.
-- Runtime account: `visa-runtime@project-a5074080-2d38-4a35-8b4.iam.gserviceaccount.com`.
+- Runtime account: `visa-runtime@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
   Storage viewer grant is conditional on the `releases/` object prefix.
-- Build account: `visa-builder@project-a5074080-2d38-4a35-8b4.iam.gserviceaccount.com`.
+- Build account: `visa-builder@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
   Storage viewer grant is conditional on `build/source/`; registry writer is
   repository-scoped. It also has log-writer and service-usage-consumer roles.
 - Monthly alert: ₩5,000, thresholds 50/90/100%, excludes credits.
@@ -26,7 +26,7 @@ upgrades are excluded. No Git staging, commit or push is part of this work.
 ## Durable snapshot and source upload
 
 - SHA-256: `a7d9cb8bdf3e60dc775859f65dba3ce9630d50ff28923fa4829f703257b4960a`.
-- Object: `gs://project-a5074080-2d38-4a35-8b4-visa-data/releases/a7d9cb8bdf3e60dc775859f65dba3ce9630d50ff28923fa4829f703257b4960a.json`.
+- Object: `gs://YOUR_PROJECT_ID-visa-data/releases/a7d9cb8bdf3e60dc775859f65dba3ce9630d50ff28923fa4829f703257b4960a.json`.
 - Pinned generation: `1792938148800368`.
 - Size: 1,551,617 bytes. Contains 22 public chunks and saved vectors.
 - Reviewed source copies are under `documents/<snapshot-sha>/`, in the same
@@ -38,13 +38,13 @@ upgrades are excluded. No Git staging, commit or push is part of this work.
 
 Production build submitted:
 `f4015bf6-099b-4bdf-bfcb-a3ad3e1f5e2b`.
-[Build details](https://console.cloud.google.com/cloud-build/builds;region=us-central1/f4015bf6-099b-4bdf-bfcb-a3ad3e1f5e2b?project=77889838176).
+[Build details](https://console.cloud.google.com/cloud-build/builds;region=us-central1/f4015bf6-099b-4bdf-bfcb-a3ad3e1f5e2b?project=YOUR_PROJECT_NUMBER).
 
 Build succeeded, including container secret-exclusion, health, homepage and
 cited-search checks on Python 3.11/Linux with a 1 GiB memory limit.
 
 - Image digest: `sha256:00171ff917a35ba97255bdac94c63fa9fc7d65d9528a0f3b4cb5353f16d2efe7`.
-- Image: `us-central1-docker.pkg.dev/project-a5074080-2d38-4a35-8b4/visa/app@sha256:00171ff917a35ba97255bdac94c63fa9fc7d65d9528a0f3b4cb5353f16d2efe7`.
+- Image: `us-central1-docker.pkg.dev/YOUR_PROJECT_ID/visa/app@sha256:00171ff917a35ba97255bdac94c63fa9fc7d65d9528a0f3b4cb5353f16d2efe7`.
 - Registry-reported image size: 287,301,592 bytes. One image fits the published
   0.5 GiB storage allowance if it is otherwise unused across the billing account;
   retained releases and other workloads can change that.
@@ -88,7 +88,7 @@ Use the authenticated CLI proxy from the deployment guide:
 
 ```bash
 gcloud run services proxy korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 --port=8081
+  --project=YOUR_PROJECT_ID --region=us-central1 --port=8081
 ```
 
 Then open `http://127.0.0.1:8081` on the machine running that command. If it runs
@@ -99,6 +99,6 @@ Keep the pinned image and snapshot generation. A future rollback to this release
 
 ```bash
 gcloud run services update-traffic korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 \
+  --project=YOUR_PROJECT_ID --region=us-central1 \
   --to-revisions=korea-visa-rag-00001-pfp=100
 ```

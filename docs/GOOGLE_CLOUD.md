@@ -19,9 +19,9 @@ The separate Telegram process uses long polling and is excluded from this web
 deployment. No unrelated project's database or hosting should be migrated.
 
 The signed-in Cloud Console showed My First Project, project ID
-`project-a5074080-2d38-4a35-8b4`, linked to a Free Trial billing account.
-The account showed ₩407,626 of ₩407,626 remaining, 90 days remaining, expiry
-January 24, 2027, and current reported cost ₩0. Billing reports can lag.
+`YOUR_PROJECT_ID`, linked to a Free Trial billing account.
+Personal trial balances, expiry dates and reported costs are omitted from
+this public guide. Check the billing dashboard before deploying; reports can lag.
 This confirms the visible account state, not the availability of every API,
 quota or IAM permission. Local `gcloud` and Docker are unavailable.
 No billing upgrade was performed.
@@ -160,7 +160,7 @@ monthly free allowances can still apply, with overages billed. Do not upgrade
 under this task. Before resources are created, choose a modest alert budget,
 for example USD 5/month with 50/90/100% notifications. Alerts do not enforce a
 cap in this proposal. Check gross service costs as well as credits so the trial
-does not hide the post-trial run rate. Review before January 24, 2027.
+does not hide the post-trial run rate. Review before your trial expires.
 
 ## Reproducible deployment commands
 
@@ -174,7 +174,7 @@ entire local directory through a browser. Never paste secrets into chat.
 First, read-only checks:
 
 ```bash
-export PROJECT_ID=project-a5074080-2d38-4a35-8b4
+export PROJECT_ID=YOUR_PROJECT_ID
 export REGION=us-central1
 export SERVICE=korea-visa-rag
 export BUCKET="${PROJECT_ID}-visa-data"

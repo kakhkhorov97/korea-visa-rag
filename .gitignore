@@ -12,3 +12,9 @@ eval/results/
 data/usage.sqlite3*
 data/public_cache/
 data/releases/
+
+# Local design-tool state and generated visual comparisons
+.impeccable/
+# Local environment variants; keep the public setup template
+.env.*
+!.env.example

@@ -2,7 +2,7 @@
   "displayName": "Visa beta health",
   "monitoredResource": {
     "type": "uptime_url",
-    "labels": {"project_id":"project-a5074080-2d38-4a35-8b4","host":"korea-visa-rag-jwq77bpivq-uc.a.run.app"}
+    "labels": {"project_id":"YOUR_PROJECT_ID","host":"korea-visa-rag-jwq77bpivq-uc.a.run.app"}
   },
   "httpCheck": {"requestMethod":"GET","useSsl":true,"validateSsl":true,"port":443,"path":"/api/health"},
   "period":"300s",

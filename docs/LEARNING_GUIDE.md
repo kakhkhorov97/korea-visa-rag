@@ -123,6 +123,8 @@ You'll have a table.
   Meaning search = `vector`, Combined search = `hybrid`. The API still uses those original
   mode values. In local mode, the UI explains the Korean keyword limitation and shows
   original passages by default. Provider setup instructions stay out of the result cards.
+- The shared `SEARCH_ONLY_NOTE` also avoids provider setup instructions: public visitors can
+  use source-only search even when the server already has an AI key.
 - Why `escapeHtml()` runs before `formatAnswer()`: answers and sources are untrusted text, so
   escaping first prevents HTML/script injection (XSS). Interviewers like this question.
 - With no `GEMINI_API_KEY`, `/api/health` reports `"llm": false` and the UI switches to search-only mode.
@@ -268,11 +270,10 @@ threshold. The assistant must still abstain when those details are absent.
 `scripts/extract_statute_annexes.py` pins the official PDF hash and reviewed row
 boundaries; refreshing a changed PDF requires a new layout review.
 
-The next local corpus has 44 chunks: five extra Enforcement Rules articles
+The live public-beta corpus has 44 chunks: five extra Enforcement Rules articles
 cover applications, fees, payment and references to supporting-document annexes.
 It does not include the annex checklists themselves. The running public revision
-still has 39 chunks until the new image and matching private snapshot are
-approved and deployed. Source-only search is now the default in the prepared
+restores the matching private snapshot at startup. Source-only search is the default in the
 frontend. AI use requires an explicit adult/South Korea acknowledgment, and
 common identifier patterns are rejected before retrieval. This pattern check
 cannot catch every kind of personal information.
@@ -284,7 +285,7 @@ provider call fails, `assistant.py` returns the original passages with a clear
 notice. Matching a quote cannot prove that the model translated or interpreted
 it correctly. The 36-question beta review has source-based retrieval labels;
 its generated answers still require independent legal review. See
-[the beta plan](PUBLIC_BETA_DEPLOYMENT.md).
+[the beta deployment record](PUBLIC_BETA_DEPLOYMENT.md).
 
 
 ## Modern web workspace
@@ -304,8 +305,8 @@ the workspace inert while open and closes with Escape.
 Newsreader headings use a bundled font with its OFL license. IBM Plex Sans KR
 continues to load from Google Fonts. Versioned CSS/JS URLs avoid stale assets
 after a release. `node --test tests/test_web.cjs` checks escaping, source URLs,
-list formatting and mobile reply navigation without an API key. `DESIGN.md`
-and `.impeccable/design.json` record the implemented visual system.
+list formatting and mobile reply navigation without an API key. `DESIGN.md` records the implemented visual system. Local design-tool state
+and generated comparisons in `.impeccable/` stay out of Git.
 
 
 ## Keeping the answer language separate from sources

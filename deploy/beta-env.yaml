@@ -1,5 +1,5 @@
 VISARAG_PUBLIC_BETA: "true"
-VISARAG_USAGE_URI: "gs://project-a5074080-2d38-4a35-8b4-visa-data/usage/public-beta"
+VISARAG_USAGE_URI: "gs://YOUR_PROJECT_ID-visa-data/usage/public-beta"
 API_REQUESTS_PER_MINUTE: "20"
 API_DAILY_REQUESTS: "500"
 API_DAILY_AI_REQUESTS: "100"

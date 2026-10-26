@@ -126,7 +126,7 @@ Rollback to the original search-only release:
 
 ```bash
 gcloud run services update-traffic korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 \
+  --project=YOUR_PROJECT_ID --region=us-central1 \
   --to-revisions=korea-visa-rag-00001-pfp=100
 ```
 

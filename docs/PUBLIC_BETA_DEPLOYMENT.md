@@ -1,9 +1,33 @@
-# Public beta: prepared deployment, awaiting cloud approval
+# Public beta: deployment record and rollback
 
-Prepared locally on 2026-10-26. These commands have **not** been run against
-the cloud project for this beta. The current public service still runs the
-39-chunk `korea-visa-rag-language` revision at
-https://korea-visa-rag-jwq77bpivq-uc.a.run.app/.
+Deployed on 2026-10-26 to
+https://korea-visa-rag-jwq77bpivq-uc.a.run.app/. Cloud Run routes 100% of
+public traffic to `korea-visa-rag-00013-xoh`; the previous 39-chunk
+`korea-visa-rag-language` revision is retained for rollback. The historical
+procedure below records how the release was prepared and can be repeated with
+new image, snapshot and revision IDs.
+
+## Verified release
+
+| Item | Result |
+|---|---|
+| Project and billing | `YOUR_PROJECT_ID`; billing linked and enabled. Personal trial balances and expiry dates are omitted. No billing upgrade. |
+| Build | `4dbc5651-2cc1-4879-9dfc-a7721fd074fe` succeeded with keyless container smoke checks. |
+| Image | `us-central1-docker.pkg.dev/YOUR_PROJECT_ID/visa/app@sha256:ce784a1528ab0ecfa99c32bdcdad19334604ce9ffc85ad47a1fec9f4b6c683e4` |
+| Snapshot | Private `releases/dde1fed36a8d42e06a10b29a84b32054a3dfbfbd0c16912c2c812f6bc80cb477.json`, generation `1793023155930292`. Startup log confirmed its checksum, 44 chunks and vectors. |
+| Candidate and traffic | `korea-visa-rag-00013-xoh` passed candidate checks, then received 100% public traffic. Public `/api/health` returned 44 chunks, AI enabled, three search modes, consent required and shared limits enabled. |
+| Public UI | D-10 source search displayed official passages and source links; screenshot in `docs/images/public-beta-live.jpg`. |
+| Privacy checks | Candidate `/privacy` returned 200; AI without acknowledgment returned 403; an email-address question returned 422. A consented English D-10 AI answer cited and quoted the official annex. |
+| Shared counter | Runtime-only conditional IAM role `visaBetaUsageWriter` applies under `usage/public-beta/`; an actual request created a private UTC-day counter object. Existing `build/source/` 14-day cleanup was retained; usage counters expire after 30 days. |
+| Monitoring | Five-minute HTTPS check `visa-beta-health-NFAOilUiT_s`; alert policies `1046325203831165668` (server errors) and `12565591148972850994` (unavailable), both enabled with zero notification channels. |
+
+The release archive had SHA-256
+`9181dad108c1aa7914d21bd71af4363a1a2c5be392e9a99a2b8db4b87a0f6a72`
+and contained 81 allowlisted files. Cloud Build uploaded 74 public application
+files, including exactly 44 statute files; private guidance and credentials
+were excluded. The small source-only wording correction produced the final
+`-r2` image. The earlier beta candidate `korea-visa-rag-00012-dof` received
+zero public traffic.
 
 ## What changes
 
@@ -50,12 +74,11 @@ bucket and Secret Manager stay private.
 
 ## Account and cost checkpoint
 
-Read-only checks found project `project-a5074080-2d38-4a35-8b4`, a linked and
+Read-only checks found project `YOUR_PROJECT_ID`, a linked and
 enabled billing account, the live service, the existing bucket and identities.
-An earlier dashboard showed Free Trial credit of about ₩407,626 with expiry on
-January 24, 2027. The billing link alone does not confirm the latest credit
-balance or a billing upgrade. Recheck the dashboard before deployment.
-The project also contains unrelated CargoCheck resources; these commands do
+Personal trial balances and expiry dates are omitted from this public record.
+Recheck the billing dashboard regularly while the beta is public.
+The project also contains unrelated resources; these commands do
 not alter them or create a project-wide spend cap.
 
 Likely incremental charges are small at modest traffic, but no lasting zero-cost
@@ -98,8 +121,8 @@ Corpus: 44 public chunks, 44 saved gemini-embedding-001 vectors
 
 The saved file was restored into a fresh local directory on 2026-10-26;
 checksum and corpus checks passed, all 44 chunks returned, and the Chroma
-index existed with `vectors: True`. No embedding call was made. The cloud
-download, IAM binding and new revision remain unverified until approval.
+index existed with `vectors: True`. No embedding call was made. The live
+revision's startup log independently confirmed the same snapshot and vectors.
 
 `scripts/package_beta.py` builds a narrow release archive for Cloud Shell.
 It includes only the application, public statute excerpts, font license and
@@ -115,7 +138,13 @@ python3 scripts/package_beta.py
 shasum -a 256 /tmp/visa-beta-release-20261026.zip
 ```
 
-## Reproducible cloud procedure, only after approval
+## Reproducible cloud procedure for a later release
+
+The commands below preserve the original rollout sequence. On later releases,
+verify and reuse the existing `visaBetaUsageWriter` role, conditional bucket
+binding, lifecycle rules, uptime check and alert policies; do not recreate them.
+Replace the snapshot hash, image tag and revision ID with newly verified
+values. Keep the previous live revision available until the replacement passes.
 
 In Cloud Shell, create a fresh `~/visa-beta-release-20261026` directory and
 upload the reviewed archive there with Cloud Shell's file upload control.
@@ -125,7 +154,7 @@ Never paste the Gemini key into a command, file, browser URL or chat. The existi
 `visa-gemini-key:1` reference stays on the service.
 
 ```bash
-export PROJECT_ID=project-a5074080-2d38-4a35-8b4
+export PROJECT_ID=YOUR_PROJECT_ID
 export REGION=us-central1
 export SERVICE=korea-visa-rag
 export BUCKET="${PROJECT_ID}-visa-data"
@@ -141,7 +170,7 @@ gcloud run services describe "$SERVICE" --project="$PROJECT_ID" --region="$REGIO
 ```
 
 Stop if the project, billing, current revision, bucket lifecycle, secret
-reference, identity or 39-chunk public health differs from this plan. Inspect
+reference, identity or public health differs from the release record. Inspect
 the archive before changing IAM. Upload the 44-chunk snapshot separately from
 this machine to Cloud Shell and check its SHA. The Cloud Shell uploader must
 have the normal object-creator permission on the existing private bucket.
@@ -173,7 +202,7 @@ The build tests a 44-chunk keyless container before pushing a new image.
 
 ```bash
 gcloud meta list-files-for-upload
-export IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/visa/app:20261026-beta44"
+export IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/visa/app:REPLACE_WITH_NEW_RELEASE_TAG"
 gcloud builds submit . --project="$PROJECT_ID" --region="$REGION" \
   --config=cloudbuild.beta.yaml --substitutions="_IMAGE=${IMAGE}" \
   --service-account="projects/${PROJECT_ID}/serviceAccounts/${BUILD_SA}" \
@@ -212,7 +241,7 @@ Check `/privacy` and a private-identifier rejection (422). A single consented
 AI sample verifies citations; it spends one free-provider request and should
 return an answer or a clearly labeled source fallback. Inspect startup logs for
 the exact snapshot SHA and `vectors: True`; verify no exception is leaked and
-that the live 39-chunk URL still serves its old revision.
+that the live URL still serves the existing revision until traffic is switched.
 
 ```bash
 curl --fail "$CANDIDATE_URL/api/health"
@@ -277,7 +306,7 @@ to `usage/public-beta/`, the beta intentionally stops serving questions.
 
 ```bash
 gcloud run services update-traffic korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 \
+  --project=YOUR_PROJECT_ID --region=us-central1 \
   --to-revisions=korea-visa-rag-language=100
 curl --fail https://korea-visa-rag-jwq77bpivq-uc.a.run.app/api/health
 ```

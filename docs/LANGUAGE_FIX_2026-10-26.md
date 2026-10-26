@@ -39,7 +39,7 @@ before submission. The one-file image uses the immutable, previously verified
 modern image, preserving installed dependency versions:
 
 ```dockerfile
-FROM us-central1-docker.pkg.dev/project-a5074080-2d38-4a35-8b4/visa/app@sha256:b278959ceb17a6bc4508036f0b1a7c172afd214121f8ee024469c8af72887670
+FROM us-central1-docker.pkg.dev/YOUR_PROJECT_ID/visa/app@sha256:b278959ceb17a6bc4508036f0b1a7c172afd214121f8ee024469c8af72887670
 COPY src/visarag/assistant.py /app/src/visarag/assistant.py
 ```
 
@@ -56,7 +56,7 @@ To restore the preceding modern UI and backend:
 
 ```bash
 gcloud run services update-traffic korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 \
+  --project=YOUR_PROJECT_ID --region=us-central1 \
   --to-revisions=korea-visa-rag-modern=100
 ```
 
@@ -69,7 +69,7 @@ no billing upgrade or paid AI activation is authorized by this fix.
 
 Cloud Build `7cd37933-2d6a-493c-8f36-a9d11f56caad` succeeded, including its
 container smoke checks. Result image:
-`us-central1-docker.pkg.dev/project-a5074080-2d38-4a35-8b4/visa/app@sha256:d73d620784cb2b40302ab9bfe24ab28eb7c0b415a5a4254ceeb1b883b78851b1`.
+`us-central1-docker.pkg.dev/YOUR_PROJECT_ID/visa/app@sha256:d73d620784cb2b40302ab9bfe24ab28eb7c0b415a5a4254ceeb1b883b78851b1`.
 
 ## Published verification
 

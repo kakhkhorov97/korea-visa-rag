@@ -22,7 +22,7 @@ unchanged. No Git staging, commit or push is part of this release.
   Real bilingual answers and five retrieved passages differ from the illustrative
   image. Some headings are reported missing despite being present in the browser.
   The automated hero phase remains open; do not describe it as passing.
-- `DESIGN.md` and `.impeccable/design.json` describe the implemented tokens and
+- `DESIGN.md` describes the implemented tokens and
   components. Both YAML and JSON parse successfully.
 
 ## Reproducible package
@@ -39,7 +39,7 @@ including both font files: 65 files. The existing build smoke checks cover
 1 GiB startup, health with 39 chunks, keyless BM25 search and secret exclusion.
 
 ```bash
-PROJECT_ID=project-a5074080-2d38-4a35-8b4
+PROJECT_ID=YOUR_PROJECT_ID
 REGION=us-central1
 IMAGE="us-central1-docker.pkg.dev/$PROJECT_ID/visa/app:20261026-modern"
 gcloud builds submit . --project="$PROJECT_ID" --region="$REGION" \
@@ -62,8 +62,8 @@ one and a 180-second timeout. There is no new database, worker or scheduler.
 Build time, stored container images and source archives consume their existing
 service allowances. Startup downloads the same snapshot. Gemini remains on the
 existing Free-tier project. Free quotas and trial credit do not promise permanent
-free hosting. The October 26 dashboard showed Free Trial, ₩407,626 credit,
-January 24, 2027 expiry and ₩0 reported cost, subject to reporting delay.
+free hosting. Personal trial balances and expiry dates are omitted from this
+public record. Check the billing dashboard before deploying.
 
 ## Rollback
 
@@ -72,7 +72,7 @@ and the same 39-chunk index:
 
 ```bash
 gcloud run services update-traffic korea-visa-rag \
-  --project=project-a5074080-2d38-4a35-8b4 --region=us-central1 \
+  --project=YOUR_PROJECT_ID --region=us-central1 \
   --to-revisions=korea-visa-rag-gemini39=100
 ```
 
