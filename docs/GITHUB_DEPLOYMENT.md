@@ -50,15 +50,19 @@ gcloud iam service-accounts add-iam-policy-binding "$DEPLOY_SA" --project="$PROJ
   --member="principalSet://iam.googleapis.com/${POOL}/attribute.repository/${REPO}"
 ```
 
-Grant the deployer only build submission, image inspection, and update access
-to the **existing** service, plus permission to act as the two existing service
-accounts. The Cloud Build permission can submit arbitrary builds, so keep the
+Grant the deployer build submission, project service usage, image inspection,
+and update access to the **existing** service, plus permission to act as the two
+existing service accounts. The Cloud Build permission can submit arbitrary
+builds and the service-usage role can consume project quota, so keep the
 provider restricted to the reviewed `main` branch and audit who may push or
-merge to it. The source-upload grant is limited to the build staging prefix.
+merge to it. The source-upload grant is limited to the build staging prefix;
+bucket viewing exposes metadata only, not private document contents.
 
 ```bash
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${DEPLOY_SA}" --role=roles/cloudbuild.builds.editor
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:${DEPLOY_SA}" --role=roles/serviceusage.serviceUsageConsumer
 gcloud run services add-iam-policy-binding korea-visa-rag \
   --project="$PROJECT_ID" --region=us-central1 \
   --member="serviceAccount:${DEPLOY_SA}" --role=roles/run.developer
@@ -74,6 +78,8 @@ gcloud artifacts repositories add-iam-policy-binding visa \
 gcloud storage buckets add-iam-policy-binding "gs://${BUCKET}" \
   --member="serviceAccount:${DEPLOY_SA}" --role=roles/storage.objectCreator \
   --condition="expression=resource.name.startsWith('projects/_/buckets/${BUCKET}/objects/build/source/'),title=github_build_source_only"
+gcloud storage buckets add-iam-policy-binding "gs://${BUCKET}" \
+  --member="serviceAccount:${DEPLOY_SA}" --role=roles/storage.bucketViewer
 ```
 
 In GitHub, create a `production` environment and restrict it to `main`; add a
