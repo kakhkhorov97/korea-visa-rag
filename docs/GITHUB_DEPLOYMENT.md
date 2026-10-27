@@ -19,13 +19,22 @@ The build uses Cloud Build's default e2-standard-2 worker. Do not set
 `options.machineType` to that default in `cloudbuild.beta.yaml`; the build
 submission rejects it as an unused option.
 
-## One-time setup (not yet done)
+The AI smoke test asks for the D-10 maximum stay because the reviewed public
+source states that limit and its exception. The candidate must return an
+English AI answer with verified citations. A broad D-10 category question
+returned the app's safe source-only fallback during the first live run, so it
+is not used as the release gate. That fallback remains the right behavior when
+the app cannot verify an AI answer.
 
-Complete these steps in the existing Google Cloud project **after reviewing IAM
-and costs**. Do not create a new project, bucket, registry or Gemini key. The
-identity provider must accept only this repository's `main` branch. The
-commands below are a reproducible template; check the current service,
-billing, IAM policies and project ID before applying them.
+## One-time setup
+
+The current Google Cloud project has these grants and the GitHub `production`
+environment in place as of October 27, 2026. The commands below are a
+reproducible template for checking or rebuilding the setup, not steps to rerun
+for every release. Check the current service, billing, IAM policies and project
+ID before applying any command. The identity provider accepts only this
+repository's `main` branch. Do not create a second project, bucket, registry
+or Gemini key for routine releases.
 
 ```bash
 export PROJECT_ID=YOUR_PROJECT_ID

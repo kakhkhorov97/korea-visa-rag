@@ -100,7 +100,7 @@ test "$(curl --silent --show-error -o /dev/null -w '%{http_code}' \
   -d '{"question":"Contact me at test@example.com","source_only":true}' \
   "$CANDIDATE_URL/api/ask")" = 422
 curl --fail --silent --show-error -H 'Content-Type: application/json' \
-  -d '{"question":"What is the D-10 visa category?","ai_ack":true}' \
+  -d '{"question":"What is the maximum stay for D-10?","ai_ack":true}' \
   "$CANDIDATE_URL/api/ask" > candidate-ai-answer.json
 python3 - <<'PY'
 import json

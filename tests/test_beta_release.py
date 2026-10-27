@@ -48,6 +48,7 @@ def test_github_release_requires_manual_main_branch_and_keyless_auth():
     assert 'credentials_json' not in auth['with']
     script = (ROOT / 'scripts/deploy_from_github.sh').read_text()
     assert '--no-traffic --tag=ci-candidate' in script
+    assert 'What is the maximum stay for D-10?' in script
     assert script.index('candidate-ai-answer.json') < script.index('--to-revisions="${CANDIDATE_REVISION}=100"')
     assert '--to-revisions="${GOOD_REVISION}=100"' in script
     assert 'VISARAG_SNAPSHOT_SHA256' in script
