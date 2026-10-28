@@ -1,8 +1,8 @@
 # 🛂 Korea Visa Assistant · 체류자격 도우미
 
-A citation-first RAG assistant, available as a **web app** and a **Telegram bot**, that answers
-questions about Korean study, work, business, family and residence visas in **English or Korean**,
-using only official government sources.
+A citation-first RAG assistant, available as a **web app**, that answers questions about Korean
+study, work, business, family and residence visas in **English or Korean**, using only official
+government sources. A Telegram adapter shares the same engine but is not deployed.
 
 > 한국어 설명은 [아래](#한국어)에 있습니다.
 
